@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.laboratorio4_login.presentation.login.LoginScreen
-import com.example.laboratorio4_login.presentation.login.RegisterScreen
+import com.example.laboratorio4_login.presentation.login.components.RegisterScreen
 import com.example.laboratorio4_login.ui.theme.Laboratorio4LoginTheme
 
 class MainActivity : ComponentActivity() {
