@@ -1,4 +1,4 @@
-package com.example.laboratorio4_login.presentation.login
+package com.example.laboratorio4_login.presentation.login.components
 
 import com.example.laboratorio4_login.R
 import androidx.compose.ui.res.stringResource
