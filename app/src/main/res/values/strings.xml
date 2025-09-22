@@ -32,6 +32,13 @@
 
     <!-- Profile Screen -->
     <string name="title_profile_screen">Perfil</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="progress_title">Progreso</string>
+    <string name="stats_title">Estadísticas</string>
+    <string name="user_name">User Name</string>
+    <string name="days_feeding">120 días alimentando a Destiny</string>
+    <string name="articles_readed">12 artículos leídos</string>
+    <string name="notes_created">23 notas creadas</string>
 
     <!-- Etiquetas para los botones de la barra de navegación inferior -->
     <string name="bottom_nav_journal">Diario</string>
