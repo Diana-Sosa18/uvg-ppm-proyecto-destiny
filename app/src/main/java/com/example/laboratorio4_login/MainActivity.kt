@@ -57,7 +57,8 @@ fun Navigation() {
         }
         composable(ROUTE_ARTICLES) {
             ArticlesScreen(
-
+                navController = navController,
+                mainNavController = navController
             )
         }
         composable(ROUTE_HOME) {
