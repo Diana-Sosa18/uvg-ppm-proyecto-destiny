@@ -10,12 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.laboratorio4_login.presentation.articulos.newsScreen
 import com.example.laboratorio4_login.presentation.login.LoginScreen
-import com.example.laboratorio4_login.presentation.login.RegisterScreen
+import com.example.laboratorio4_login.presentation.login.components.RegisterScreen
 import com.example.laboratorio4_login.ui.theme.Laboratorio4LoginTheme
 import com.example.laboratorio4_login.presentation.login.journal.JournalScreen
 import com.example.laboratorio4_login.presentation.login.LoginScreen
 import com.example.laboratorio4_login.ui.theme.Laboratorio4LoginTheme
-import com.example.laboratorio4_login.presentation.login.RegisterScreen
+import com.example.laboratorio4_login.presentation.login.components.RegisterScreen
 import com.example.laboratorio4_login.presentation.login.home.HomeScreen
 import com.example.laboratorio4_login.presentation.login.profile.ProfileScreen
 
