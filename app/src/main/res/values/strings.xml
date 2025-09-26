@@ -24,9 +24,6 @@
     <string name="title_journal_screen">Mi Diario</string>
     <string name="welcome_journal_message">¡Bienvenido al Journal!</string>
 
-    <!-- Articles Screen -->
-    <string name="title_articles_screen">Artículos</string>
-
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
     <string name="home_streak_title">Racha</string>
