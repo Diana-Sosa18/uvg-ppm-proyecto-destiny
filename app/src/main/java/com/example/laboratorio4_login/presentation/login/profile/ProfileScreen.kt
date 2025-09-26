@@ -61,7 +61,21 @@ fun ProfileScreen(navController: NavController, mainNavController: NavController
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(screenName) })
+            TopAppBar(
+                title = { Text(screenName) },
+                actions = {
+                    Button(
+                        onClick = { navController.navigate(com.example.laboratorio4_login.ROUTE_LOGIN) },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.logout),
+                            color = Color.White,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            )
         },
         bottomBar = {
             NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
