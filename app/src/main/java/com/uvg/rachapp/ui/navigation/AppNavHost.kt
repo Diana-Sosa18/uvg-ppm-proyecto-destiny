@@ -1,0 +1,43 @@
+package com.uvg.rachapp.ui.navigation
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.uvg.rachapp.presentation.articulos.NewsScreen
+import com.uvg.rachapp.ui.screens.home.HomeScreen
+import com.uvg.rachapp.ui.screens.journal.JournalScreen
+
+import com.uvg.rachapp.ui.screens.profile.ProfileScreen
+
+@Composable
+fun AppNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Home.route,
+        modifier = modifier
+    ) {
+        composable(Screen.Journal.route) {
+            JournalScreen(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable(Screen.News.route) {
+            NewsScreen(modifier = Modifier.fillMaxSize())
+        }
+        composable(Screen.Home.route) {
+            HomeScreen(
+                onLogout = onLogout
+            )
+        }
+        composable(Screen.Profile.route) {
+            ProfileScreen(modifier = Modifier.fillMaxSize())
+        }
+    }
+}
