@@ -31,7 +31,7 @@ import com.uvg.rachapp.ui.screens.authentication.components.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun JournalScreen(modifier: Modifier = Modifier) {
+fun JournalScreen() {
     val paddingValues = null
     Box(
         modifier = Modifier

@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.uvg.rachapp.PlaceholderScreen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import com.uvg.rachapp.R
@@ -27,68 +26,13 @@ import com.uvg.rachapp.R
 @Preview(showBackground = true)
 @Composable
 fun AppScreenPreview() {
-    AppScreen(onLogout = {})
-}
-
-@Composable
-fun AppScreen(
-    onLogout: () -> Unit
-) {
-    var selectedTab by remember { mutableIntStateOf(2) } // Pantalla activa
-
-    val tabItems = listOf(
-        "Notas" to R.drawable.journal_con_fondo,
-        "Noticias" to R.drawable.noticias_con_fondo,
-        "Inicio" to R.drawable.home_con_fondo,
-        "Perfil" to R.drawable.perfil_con_fondo
-    )
-
-    Scaffold(
-        bottomBar = {
-            NavigationBar (
-                containerColor = Color(0xFF091f5B)
-            ) {
-                tabItems.forEachIndexed { index, (label, iconRes) ->
-                    val isSelected = selectedTab == index
-
-                    NavigationBarItem(
-                        selected = isSelected,
-                        onClick = { selectedTab = index },
-                        icon = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    painter = painterResource(id = iconRes),
-                                    contentDescription = label,
-                                    modifier = Modifier.size(if (isSelected) 20.dp else 28.dp)
-                                )
-                                if (isSelected) {
-                                    Text(
-                                        text = label,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontSize = 10.sp
-                                    )
-                                }
-                            }
-                        },
-                        alwaysShowLabel = false // desactiva el label por defecto
-                    )
-                }
-            }
-        }
-    ) { padding ->
-        Box(modifier = Modifier.padding(padding)) {
-            when (selectedTab) {
-                2 -> HomeScreen(onLogout)
-                else -> PlaceholderScreen("Pantalla $selectedTab")
-            }
-        }
-    }
+    HomeScreen()
 }
 
 
 // El contenido principal de la pantalla Home
 @Composable
-fun HomeScreen(onLogout: () -> Unit) {
+fun HomeScreen() {
     val scope = rememberCoroutineScope()
     var scale by remember { mutableStateOf(1f) }
 

@@ -28,8 +28,7 @@ import com.uvg.rachapp.R
 data class Articulo(val titulo: Int, val descripcion: Int)
 
 @Composable
-fun NewsScreen(modifier: Modifier = Modifier) {
-
+fun NewsScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize(),

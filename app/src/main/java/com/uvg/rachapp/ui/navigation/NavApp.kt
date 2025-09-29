@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,7 +45,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
-import com.uvg.rachapp.PlaceholderScreen
 import com.uvg.rachapp.R
 import kotlinx.coroutines.launch
 
@@ -56,38 +56,37 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     var selectedTab by remember { mutableStateOf(Screen.Home.route) }
-
+    val currentRoute = selectedTab
     val tabItems = listOf(
-        Screen.Journal to R.drawable.journal_con_fondo,
-        Screen.News to R.drawable.noticias_con_fondo,
-        Screen.Home to R.drawable.home_con_fondo,
-        Screen.Profile to R.drawable.perfil_con_fondo
+        Screen.Journal to R.drawable.iconjournal,
+        Screen.News to R.drawable.iconarticles,
+        Screen.Home to R.drawable.iconhome,
+        Screen.Profile to R.drawable.iconprofile
     )
 
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
+            NavigationBar(containerColor = Color(0xFF091f5B)) {
                 tabItems.forEach { (screen, iconRes) ->
                     val isSelected = selectedTab == screen.route
 
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = {
-                            selectedTab = screen.route
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                            if (currentRoute != screen.route) {
+                                selectedTab = screen.route
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         icon = {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                val iconSize: Dp = if (isSelected) 20.dp else 24.dp
-                                val iconAlpha = if (isSelected) 1f else 0.5f
+                                val iconSize: Dp = if (isSelected) 30.dp else 24.dp
+                                val iconAlpha = if (isSelected) 1f else 0.6f
 
                                 Image(
                                     painter = painterResource(id = iconRes),
@@ -97,17 +96,26 @@ fun AppNavigation(
                                         .alpha(iconAlpha),
                                     contentScale = ContentScale.Fit
                                 )
-
-                                if (isSelected) {
-                                    Text(
-                                        text = screen.route,
-                                        color = Color.White,
-                                        fontSize = 10.sp
-                                    )
-                                }
+                        },
+                        label = {
+                            // Solo muestra la etiqueta si el ítem está seleccionado
+                            if (isSelected) {
+                                Text(
+                                    text = screen.route,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
                             }
                         },
-                        label = null
+                        colors = NavigationBarItemDefaults.colors(
+                            // Colores para el ítem seleccionado (activo)
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                            indicatorColor = Color.Transparent,
+
+                            // Colores para el ítem no seleccionado (inactivo)
+                            unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                            unselectedTextColor = Color.Transparent
+                        )
                     )
                 }
             }
