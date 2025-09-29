@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.laboratorio4_login"
+    namespace = "com.uvg.rachapp"
     compileSdk = 36
 
     defaultConfig {
