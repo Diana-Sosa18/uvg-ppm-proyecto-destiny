@@ -42,14 +42,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-@Composable
-fun PlaceholderScreen(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(title)
-    }
-}

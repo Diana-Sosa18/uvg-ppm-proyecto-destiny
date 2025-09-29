@@ -24,20 +24,16 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(Screen.Journal.route) {
-            JournalScreen(
-                modifier = Modifier.fillMaxSize()
-            )
+            JournalScreen()
         }
         composable(Screen.News.route) {
-            NewsScreen(modifier = Modifier.fillMaxSize())
+            NewsScreen()
         }
         composable(Screen.Home.route) {
-            HomeScreen(
-                onLogout = onLogout
-            )
+            HomeScreen()
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(modifier = Modifier.fillMaxSize())
+            ProfileScreen(onLogout = onLogout)
         }
     }
 }
