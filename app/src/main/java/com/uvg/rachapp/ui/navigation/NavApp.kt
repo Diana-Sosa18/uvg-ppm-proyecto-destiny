@@ -26,6 +26,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +64,11 @@ fun AppNavigation(
         Screen.Home to R.drawable.iconhome,
         Screen.Profile to R.drawable.iconprofile
     )
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            selectedTab = backStackEntry.destination.route ?: Screen.Home.route
+        }
+    }
 
     Scaffold(
         bottomBar = {
