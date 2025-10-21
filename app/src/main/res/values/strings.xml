@@ -24,14 +24,40 @@
     <string name="title_journal_screen">Mi Diario</string>
     <string name="welcome_journal_message">¡Bienvenido al Journal!</string>
 
-    <!-- Articles Screen -->
-    <string name="title_articles_screen">Artículos</string>
-
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
+    <string name="home_streak_title">Racha</string>
+    <string name="home_arrow">&lt;-</string>
+    <string name="home_feed_destiny">¡Dale una croqueta a Destiny, si superaste otro día más!&#10;Puedes darle todas las croquetas que quieras ^_^</string>
+    <string name="home_button_desc">Botón de croqueta</string>
+    <string name="home_dog_desc">Imagen de Destiny el perro</string>
+    <string name="calendar_month">Agosto</string>
 
     <!-- Profile Screen -->
     <string name="title_profile_screen">Perfil</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="progress_title">Progreso</string>
+    <string name="stats_title">Estadísticas</string>
+    <string name="user_name">User Name</string>
+    <string name="days_feeding">120 días alimentando a Destiny</string>
+    <string name="articles_readed">12 artículos leídos</string>
+    <string name="notes_created">23 notas creadas</string>
+    <string name="logout">Cerrar Sesión</string>
+
+    <!-- Pantalla de Artículos -->
+    <string name="articulos_title">Artículos</string>
+
+    <string name="articulo1_title">El efecto de la dopamina en las redes sociales</string>
+    <string name="articulo1_desc">Explica cómo los “me gusta” y notificaciones generan placer en el cerebro y pueden causar adicción digital.</string>
+
+    <string name="articulo2_title">Alcohol y sueño: una combinación engañosa</string>
+    <string name="articulo2_desc">Aunque ayuda a dormir rápido, el alcohol interrumpe el descanso y afecta la energía del día siguiente.</string>
+
+    <string name="articulo3_title">Desintoxicación digital: cómo empezar</string>
+    <string name="articulo3_desc">Consejos prácticos para reducir el uso de redes y mejorar la concentración y la salud mental.</string>
+
+    <string name="articulo4_title">El alcohol y su impacto en las relaciones personales</string>
+    <string name="articulo4_desc">Muestra cómo el consumo excesivo puede dañar la confianza y la convivencia con familia y amigos.</string>
 
     <!-- Etiquetas para los botones de la barra de navegación inferior -->
     <string name="bottom_nav_journal">Diario</string>
