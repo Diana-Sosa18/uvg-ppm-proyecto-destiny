@@ -2,8 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id ("kotlin-kapt")
+    id("kotlin-kapt")
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
 }
 
 android {
@@ -11,7 +13,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.laboratorio4_login"
+        applicationId = "com.uvg.rachapp"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -47,6 +49,12 @@ android {
 
 dependencies {
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.crashlytics)
+
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -58,20 +66,21 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    // Room
+
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.androidx.media3.common.ktx)
-    kapt ("androidx.room:room-compiler:2.6.1")
-    implementation ("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
-    // Lifecycle (para ViewModel)
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
-    //HILT - Inyección de dependencias (construcción del viewmodel)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -80,5 +89,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }

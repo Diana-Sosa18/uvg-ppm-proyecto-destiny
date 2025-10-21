@@ -29,7 +29,7 @@ import androidx.navigation.NavHostController
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
 
-// Colores locales
+
 private val FACEBOOK_COLOR = Color(0xFF1877F2)
 private val GMAIL_COLOR = Color(0xFFDB4437)
 
@@ -45,7 +45,79 @@ fun RegisterScreen(navController: NavHostController) {
     var passwordVisibility by remember { mutableStateOf(false) }
     var confirmPasswordVisibility by remember { mutableStateOf(false) }
 
+    // Variables de error
+    var nameError by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    var phoneError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
+    var confirmPasswordError by remember { mutableStateOf("") }
+
     val focusManager = LocalFocusManager.current
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        return email.matches(emailRegex.toRegex())
+    }
+
+    fun isValidPhone(phone: String): Boolean {
+        return phone.length == 8 && phone.all { it.isDigit() }
+    }
+
+    fun validateForm(): Boolean {
+        var isValid = true
+
+        if (nameValue.value.isEmpty()) {
+            nameError = "El nombre es requerido"
+            isValid = false
+        } else if (nameValue.value.length < 2) {
+            nameError = "Mínimo 2 caracteres"
+            isValid = false
+        } else {
+            nameError = ""
+        }
+
+        if (emailValue.value.isEmpty()) {
+            emailError = "El email es requerido"
+            isValid = false
+        } else if (!isValidEmail(emailValue.value)) {
+            emailError = "Ingresa un email válido"
+            isValid = false
+        } else {
+            emailError = ""
+        }
+
+        if (phoneValue.value.isEmpty()) {
+            phoneError = "El teléfono es requerido"
+            isValid = false
+        } else if (!isValidPhone(phoneValue.value)) {
+            phoneError = "Debe tener 8 dígitos"
+            isValid = false
+        } else {
+            phoneError = ""
+        }
+
+        if (passwordValue.value.isEmpty()) {
+            passwordError = "La contraseña es requerida"
+            isValid = false
+        } else if (passwordValue.value.length < 6) {
+            passwordError = "Mínimo 6 caracteres"
+            isValid = false
+        } else {
+            passwordError = ""
+        }
+
+        if (confirmPasswordValue.value.isEmpty()) {
+            confirmPasswordError = "Confirma tu contraseña"
+            isValid = false
+        } else if (passwordValue.value != confirmPasswordValue.value) {
+            confirmPasswordError = "Las contraseñas no coinciden"
+            isValid = false
+        } else {
+            confirmPasswordError = ""
+        }
+
+        return isValid
+    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -61,7 +133,6 @@ fun RegisterScreen(navController: NavHostController) {
             ) {
                 IconButton(
                     onClick = {
-                        // Navegar hacia atrás (al login)
                         navController.popBackStack()
                     }
                 ) {
@@ -85,7 +156,7 @@ fun RegisterScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp) // Menos espacio para errores
             ) {
                 TransparentTextField(
                     textFieldValue = nameValue,
@@ -98,6 +169,18 @@ fun RegisterScreen(navController: NavHostController) {
                     ),
                     imeAction = ImeAction.Next
                 )
+                if (nameError.isNotEmpty()) {
+                    Text(
+                        text = nameError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 TransparentTextField(
                     textFieldValue = emailValue,
@@ -108,17 +191,41 @@ fun RegisterScreen(navController: NavHostController) {
                     ),
                     imeAction = ImeAction.Next
                 )
+                if (emailError.isNotEmpty()) {
+                    Text(
+                        text = emailError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 TransparentTextField(
                     textFieldValue = phoneValue,
                     textLabel = "Número de teléfono",
-                    maxChar = 10,
+                    maxChar = 8,
                     keyboardType = KeyboardType.Phone,
                     keyboardActions = KeyboardActions(
                         onNext = { focusManager.moveFocus(FocusDirection.Down) }
                     ),
                     imeAction = ImeAction.Next
                 )
+                if (phoneError.isNotEmpty()) {
+                    Text(
+                        text = phoneError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 TransparentTextField(
                     textFieldValue = passwordValue,
@@ -144,6 +251,18 @@ fun RegisterScreen(navController: NavHostController) {
                     },
                     visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation()
                 )
+                if (passwordError.isNotEmpty()) {
+                    Text(
+                        text = passwordError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 TransparentTextField(
                     textFieldValue = confirmPasswordValue,
@@ -152,7 +271,9 @@ fun RegisterScreen(navController: NavHostController) {
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            // TODO: Lógica de registro
+                            if (validateForm()) {
+                                // TODO: Lógica de registro
+                            }
                         }
                     ),
                     imeAction = ImeAction.Done,
@@ -170,6 +291,16 @@ fun RegisterScreen(navController: NavHostController) {
                     },
                     visualTransformation = if (confirmPasswordVisibility) VisualTransformation.None else PasswordVisualTransformation()
                 )
+                if (confirmPasswordError.isNotEmpty()) {
+                    Text(
+                        text = confirmPasswordError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -177,7 +308,10 @@ fun RegisterScreen(navController: NavHostController) {
                     text = "Registrarse",
                     displayProgressBar = false,
                     onClick = {
-                        // TODO: Lógica de registro
+                        focusManager.clearFocus()
+                        if (validateForm()) {
+                            // TODO: Lógica de registro - Solo se ejecuta si las validaciones pasan
+                        }
                     }
                 )
 
@@ -195,7 +329,6 @@ fun RegisterScreen(navController: NavHostController) {
                         }
                     },
                     onClick = {
-                        // Navegar directamente al login
                         navController.navigate("login")
                     }
                 )
@@ -267,7 +400,6 @@ fun RegisterScreen(navController: NavHostController) {
     }
 }
 
-// Componente SocialButton
 @Composable
 fun SocialButton(
     text: String,
