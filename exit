@@ -1,0 +1,152 @@
+[33mcommit 7380c7df5ebb46341fbdce07138ca3f2f4823cee[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/integration-Screens[m[33m, [m[1;31morigin/feat/integration-Screens[m[33m)[m
+Author: R-0WL <reneaoswaldo@gmail.com>
+Date:   Fri Sep 26 16:44:56 2025 -0600
+
+    Se hizo merge desde el main para volver a alinear el proyecto. Se cambió el gitignore de nuevo porque se perdió en el merge. O_O
+
+[33mcommit f83c7e2142f44cb524222140fd8e82d20df2d0f4[m
+Author: R-0WL <abe24290@uvg.edu.gt>
+Date:   Tue Sep 23 00:35:32 2025 -0600
+
+    Remover archivos generados (.gradle, .idea, local.properties) del seguimiento
+
+[33mcommit 8934123968da477efb76cb2b5cf9b5a4e423930e[m
+Merge: 077e73e d41a062
+Author: R-0WL <abe24290@uvg.edu.gt>
+Date:   Tue Sep 23 00:34:24 2025 -0600
+
+    Merge main into feat/integration-Screens: conflictos resueltos
+
+[33mcommit 077e73ed8c3ffc0cd2665f1e3e0a332622344c73[m
+Author: R-0WL <abe24290@uvg.edu.gt>
+Date:   Mon Sep 22 23:55:09 2025 -0600
+
+    Todas las pantallas unidas
+
+[33mcommit d41a062423d9c4080858ded28532da67845fd950[m
+Merge: abee446 7417f96
+Author: Marcela Ordoñez <168119664+anaxmarcela@users.noreply.github.com>
+Date:   Mon Sep 22 22:20:07 2025 -0600
+
+    Merge pull request #7 from Diana-Sosa18/feature/profile-screen-navigation
+    
+    Feature/profile screen navigation
+
+[33mcommit 7417f965d8861a12e487865743bc0f0d281bd63e[m[33m ([m[1;31morigin/feature/profile-screen-navigation[m[33m)[m
+Author: liafdeb <biancka30ar@gmail.com>
+Date:   Mon Sep 22 03:16:40 2025 -0600
+
+    feat: añadir barra de navegacion funacional
+
+[33mcommit dc5177e10cf6927150614d5a495ad607fb198b25[m
+Merge: 641fbd5 abee446
+Author: liafdeb <biancka30ar@gmail.com>
+Date:   Tue Sep 9 06:03:34 2025 -0600
+
+    Merge branch 'main' into feature/profile-screen-navigation
+
+[33mcommit abee446400129935fd1306e587ca9e12c507d25a[m
+Merge: 33d4677 9fd507e
+Author: biancka <148025090+bianckaa@users.noreply.github.com>
+Date:   Tue Sep 9 05:28:01 2025 -0600
+
+    Merge pull request #5 from Diana-Sosa18/JournalScreen/Ivana
+    
+    Journal screen/ivana
+
+[33mcommit 9fd507e51c8140b69fb23f564977de07d60b20d5[m
+Author: IvanaFD <ivanafigueroa0936@gmail.com>
+Date:   Tue Sep 9 04:36:28 2025 -0600
+
+    Por el atraso de la pagina home, se inicia en la pagian journal, su barra de navegacion ya posee la navegacion al resto de pantallas, asi poder continuar con la navegacion de cada una
+
+[33mcommit bbe2327f37ee8fb8f16851e230b7cce9bf969e58[m
+Author: IvanaFD <ivanafigueroa0936@gmail.com>
+Date:   Tue Sep 9 03:57:50 2025 -0600
+
+    navegacion del logina a la pantalla journal realizado, se realizo de esta forma por inconveniente de retraso de la pantalla Home
+
+[33mcommit 641fbd5769ed09ca8ac831291086479e5516904f[m
+Author: liafdeb <biancka30ar@gmail.com>
+Date:   Tue Sep 9 03:04:30 2025 -0600
+
+    fix: corregir llamadas a funciones
+
+[33mcommit 2271abb3b20cd45471dfbb7939e7d1a10130bccf[m
+Merge: c33b713 33d4677
+Author: IvanaFD <ivanafigueroa0936@gmail.com>
+Date:   Tue Sep 9 02:28:05 2025 -0600
+
+    Merge branch 'main' of https://github.com/Diana-Sosa18/Proyecto-Entrega-4---UI into JournalScreen/Ivana
+
+[33mcommit c33b713dfae1f3aef261ebe1a300663bbfe06f61[m
+Author: IvanaFD <ivanafigueroa0936@gmail.com>
+Date:   Tue Sep 9 02:26:17 2025 -0600
+
+    cambios en la navegacion
+
+[33mcommit 33d467753672b3d2a076102e29a76e33003130ee[m
+Merge: 024741e bd70564
+Author: Ivana Cristina Figueroa Diemek <168110423+IvanaFD@users.noreply.github.com>
+Date:   Tue Sep 9 01:30:42 2025 -0600
+
+    Merge pull request #4 from Diana-Sosa18/feature/icon-and-name
+    
+    feat: cambio de nombre e icono de la aplicación
+
+[33mcommit bd705648796d8d1b174485301fe219bfc99fc559[m[33m ([m[1;31morigin/feature/icon-and-name[m[33m)[m
+Author: marianolhe <168101818+marianolhe@users.noreply.github.com>
+Date:   Tue Sep 9 01:25:50 2025 -0600
+
+    feat: cambio de nombre e icono de la aplicación
+
+[33mcommit 024741e47dd76a647bf597563e570165793b49c7[m
+Merge: 87b22db e4edc64
+Author: Ivana Cristina Figueroa Diemek <168110423+IvanaFD@users.noreply.github.com>
+Date:   Mon Sep 8 22:01:03 2025 -0600
+
+    Merge pull request #3 from Diana-Sosa18/login/Diana
+    
+    strings.xml
+
+[33mcommit e4edc6462c27de8c0ee1affd96df5edfe7231ecc[m[33m ([m[1;31morigin/feature/login/Diana[m[33m)[m
+Author: Diana-Sosa18 <sosadiana364@gmail.com>
+Date:   Mon Sep 8 21:58:42 2025 -0600
+
+    strings.xml
+
+[33mcommit 87b22db080d303f9d8746f52f835bd9ffdebf674[m
+Merge: 6b9a1f0 ce3895a
+Author: Marian <168101818+marianolhe@users.noreply.github.com>
+Date:   Mon Sep 8 19:05:10 2025 -0600
+
+    Merge pull request #2 from Diana-Sosa18/login/Diana
+    
+    cambio de pantallas
+
+[33mcommit ce3895a7ca5b315ee309d8fa605bd98db4acc649[m
+Author: Diana-Sosa18 <sosadiana364@gmail.com>
+Date:   Mon Sep 8 19:00:40 2025 -0600
+
+    cambio de pantallas
+
+[33mcommit 6b9a1f0a817d04a98d4b07bea7be3d5c25d02dd3[m[33m ([m[1;31morigin/feature/Todo_lo_que_tenía_XD[m[33m)[m
+Merge: 1b97e84 e6e88e1
+Author: Marian <168101818+marianolhe@users.noreply.github.com>
+Date:   Sat Sep 6 17:15:01 2025 -0600
+
+    Merge pull request #1 from Diana-Sosa18/login/Diana
+    
+    creacion de login con funcionamiento
+
+[33mcommit e6e88e1f5f6e3efddbd0509c6cc44454427c397a[m
+Author: Diana-Sosa18 <sosadiana364@gmail.com>
+Date:   Sat Sep 6 16:42:30 2025 -0600
+
+    login
+
+[33mcommit 1b97e8457dfee4c4f146995add57629e3b5c40ae[m[33m ([m[1;31morigin/feature/navBar[m[33m)[m
+Author: Diana-Sosa18 <168100470+Diana-Sosa18@users.noreply.github.com>
+Date:   Tue Sep 2 08:45:59 2025 -0600
+
+    Initial commit
