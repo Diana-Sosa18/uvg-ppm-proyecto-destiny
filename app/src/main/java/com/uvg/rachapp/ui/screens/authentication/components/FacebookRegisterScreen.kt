@@ -28,7 +28,46 @@ fun FacebookRegisterScreen(navController: NavHostController) {
     val emailValue = remember { mutableStateOf("") }
     val passwordValue = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
+
     val focusManager = LocalFocusManager.current
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        return email.matches(emailRegex.toRegex())
+    }
+
+    fun isValidPhone(phone: String): Boolean {
+        return phone.length == 8 && phone.all { it.isDigit() }
+    }
+
+    fun validateForm(): Boolean {
+        var isValid = true
+
+        if (emailValue.value.isEmpty()) {
+            emailError = "El email o teléfono es requerido"
+            isValid = false
+        } else if (!isValidEmail(emailValue.value) && !isValidPhone(emailValue.value)) {
+            emailError = "Ingresa un email válido o teléfono de 8 dígitos"
+            isValid = false
+        } else {
+            emailError = ""
+        }
+
+        if (passwordValue.value.isEmpty()) {
+            passwordError = "La contraseña es requerida"
+            isValid = false
+        } else if (passwordValue.value.length < 6) {
+            passwordError = "Mínimo 6 caracteres"
+            isValid = false
+        } else {
+            passwordError = ""
+        }
+
+        return isValid
+    }
 
     Column(
         modifier = Modifier
@@ -37,7 +76,6 @@ fun FacebookRegisterScreen(navController: NavHostController) {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -54,16 +92,26 @@ fun FacebookRegisterScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Formulario simple
         TransparentTextField(
             textFieldValue = emailValue,
             textLabel = "Email o teléfono",
-            keyboardType = KeyboardType.Email,
+            keyboardType = KeyboardType.Text,
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             imeAction = ImeAction.Next
         )
+
+        if (emailError.isNotEmpty()) {
+            Text(
+                text = emailError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp)
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -72,7 +120,13 @@ fun FacebookRegisterScreen(navController: NavHostController) {
             textLabel = "Contraseña",
             keyboardType = KeyboardType.Password,
             keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
+                onDone = {
+                    focusManager.clearFocus()
+                    if (validateForm()) {
+                        // TODO: Lógica de registro con Facebook
+                        navController.popBackStack()
+                    }
+                }
             ),
             imeAction = ImeAction.Done,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -83,13 +137,26 @@ fun FacebookRegisterScreen(navController: NavHostController) {
             }
         )
 
+        if (passwordError.isNotEmpty()) {
+            Text(
+                text = passwordError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Botón de registro
         Button(
             onClick = {
-                // TODO: Lógica de registro con Facebook
-                navController.popBackStack()
+                focusManager.clearFocus()
+                if (validateForm()) {
+                    // TODO: Lógica de registro con Facebook
+                    navController.popBackStack()
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -28,7 +28,49 @@ fun GmailRegisterScreen(navController: NavHostController) {
     val emailValue = remember { mutableStateOf("") }
     val passwordValue = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
+
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
+
     val focusManager = LocalFocusManager.current
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        return email.matches(emailRegex.toRegex())
+    }
+
+    fun isGmailEmail(email: String): Boolean {
+        return email.contains("@gmail.com") || email.contains("@googlemail.com")
+    }
+
+    fun validateForm(): Boolean {
+        var isValid = true
+
+        if (emailValue.value.isEmpty()) {
+            emailError = "El email es requerido"
+            isValid = false
+        } else if (!isValidEmail(emailValue.value)) {
+            emailError = "Ingresa un email válido"
+            isValid = false
+        } else if (!isGmailEmail(emailValue.value)) {
+            emailError = "Debe ser un email de Gmail (@gmail.com)"
+            isValid = false
+        } else {
+            emailError = ""
+        }
+
+        if (passwordValue.value.isEmpty()) {
+            passwordError = "La contraseña es requerida"
+            isValid = false
+        } else if (passwordValue.value.length < 6) {
+            passwordError = "Mínimo 6 caracteres"
+            isValid = false
+        } else {
+            passwordError = ""
+        }
+
+        return isValid
+    }
 
     Column(
         modifier = Modifier
@@ -37,7 +79,6 @@ fun GmailRegisterScreen(navController: NavHostController) {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -54,7 +95,6 @@ fun GmailRegisterScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Logo de Gmail (simple)
         Text(
             text = "G",
             style = MaterialTheme.typography.displayLarge,
@@ -63,7 +103,6 @@ fun GmailRegisterScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Formulario simple
         TransparentTextField(
             textFieldValue = emailValue,
             textLabel = "Email de Gmail",
@@ -74,6 +113,17 @@ fun GmailRegisterScreen(navController: NavHostController) {
             imeAction = ImeAction.Next
         )
 
+        if (emailError.isNotEmpty()) {
+            Text(
+                text = emailError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         TransparentTextField(
@@ -81,7 +131,13 @@ fun GmailRegisterScreen(navController: NavHostController) {
             textLabel = "Contraseña de Gmail",
             keyboardType = KeyboardType.Password,
             keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
+                onDone = {
+                    focusManager.clearFocus()
+                    if (validateForm()) {
+                        // TODO: Lógica de registro con Gmail
+                        navController.popBackStack()
+                    }
+                }
             ),
             imeAction = ImeAction.Done,
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -92,13 +148,26 @@ fun GmailRegisterScreen(navController: NavHostController) {
             }
         )
 
+        if (passwordError.isNotEmpty()) {
+            Text(
+                text = passwordError,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Botón de registro
         Button(
             onClick = {
-                // TODO: Lógica de registro con Gmail
-                navController.popBackStack()
+                focusManager.clearFocus()
+                if (validateForm()) {
+                    // TODO: Lógica de registro con Gmail
+                    navController.popBackStack()
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
