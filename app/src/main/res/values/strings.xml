@@ -21,9 +21,23 @@
     <string name="logo_image">Logo de la aplicación</string>
 
     <!-- Journal Screen -->
-    <string name="title_journal_screen">Mi Diario</string>
-    <string name="welcome_journal_message">¡Bienvenido al Journal!</string>
+    <string name="journal_title">Mi Diario</string>
+    <string name="journal_empty_state">No tienes notas aún.\nComienza escribiendo tu primera entrada.</string>
+    <string name="journal_add_note">Agregar Nota</string>
 
+    <string name="journal_note_title_hint">Título de la nota</string>
+    <string name="journal_note_content_hint">Escribe tu nota aquí…</string>
+    <string name="journal_save_button">Guardar</string>
+    <string name="journal_cancel_button">Cancelar</string>
+
+    <string name="journal_confirm_title">Confirmación de Privacidad</string>
+    <string name="journal_confirm_message">¿Está seguro de que desea ver el contenido de esta nota?</string>
+    <string name="journal_confirm_yes">Aceptar</string>
+    <string name="journal_confirm_no">Cancelar</string>
+
+    <string name="journal_detail_close">Cerrar</string>
+
+    <string name="journal_date_format">dd/MM/yyyy HH:mm</string>
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
     <string name="home_streak_title">Racha</string>
