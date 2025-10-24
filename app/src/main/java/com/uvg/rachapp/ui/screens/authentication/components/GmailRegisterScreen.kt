@@ -20,8 +20,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
+import com.uvg.rachapp.viewModels.AuthViewModel
+import com.uvg.rachapp.viewModels.AuthState
 
 @Composable
 fun GmailRegisterScreen(navController: NavHostController) {
@@ -29,10 +33,14 @@ fun GmailRegisterScreen(navController: NavHostController) {
     val passwordValue = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
 
+
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
@@ -72,6 +80,12 @@ fun GmailRegisterScreen(navController: NavHostController) {
         return isValid
     }
 
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            navController.popBackStack() // Volver al registro principal
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,6 +104,17 @@ fun GmailRegisterScreen(navController: NavHostController) {
                 text = "Registro con Gmail",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color(0xFFDB4437)
+            )
+        }
+
+        if (authState is AuthState.Error) {
+            Text(
+                text = (authState as AuthState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
 
@@ -134,8 +159,7 @@ fun GmailRegisterScreen(navController: NavHostController) {
                 onDone = {
                     focusManager.clearFocus()
                     if (validateForm()) {
-                        // TODO: Lógica de registro con Gmail
-                        navController.popBackStack()
+                        authViewModel.registerWithGmail(emailValue.value, passwordValue.value)
                     }
                 }
             ),
@@ -165,8 +189,7 @@ fun GmailRegisterScreen(navController: NavHostController) {
             onClick = {
                 focusManager.clearFocus()
                 if (validateForm()) {
-                    // TODO: Lógica de registro con Gmail
-                    navController.popBackStack()
+                    authViewModel.registerWithGmail(emailValue.value, passwordValue.value)
                 }
             },
             modifier = Modifier
@@ -174,7 +197,10 @@ fun GmailRegisterScreen(navController: NavHostController) {
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDB4437))
         ) {
-            Text("Registrarse con Gmail", color = Color.White)
+            Text(
+                text = if (authState is AuthState.Loading) "Registrando..." else "Registrarse con Gmail",
+                color = Color.White
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

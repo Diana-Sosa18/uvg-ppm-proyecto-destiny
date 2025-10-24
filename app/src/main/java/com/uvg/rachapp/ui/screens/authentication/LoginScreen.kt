@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -49,9 +50,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
+import com.uvg.rachapp.viewModels.AuthViewModel
+import com.uvg.rachapp.viewModels.AuthState
 
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
@@ -62,6 +67,9 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
@@ -92,6 +100,12 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
         }
 
         return isValid
+    }
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            onLoginSuccess()
+        }
     }
 
     Box(
@@ -137,12 +151,25 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                 color = MaterialTheme.colorScheme.primary
                             )
                         )
+
+                        // Mostrar error de Firebase
+                        if (authState is AuthState.Error) {
+                            Text(
+                                text = (authState as AuthState.Error).message,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+                        }
+
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp) // Reducí el espacio
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             TransparentTextField(
                                 textFieldValue = emailValue,
@@ -177,7 +204,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                     onDone = {
                                         focusManager.clearFocus()
                                         if (validateForm()) {
-                                            onLoginSuccess()
+                                            authViewModel.login(emailValue.value, passwordValue.value)
                                         }
                                     }
                                 ),
@@ -225,14 +252,13 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            val context = LocalContext.current
                             RoundedButton(
-                                text = stringResource(R.string.login_button),
-                                displayProgressBar = false,
+                                text = if (authState is AuthState.Loading) "Iniciando sesión..." else stringResource(R.string.login_button),
+                                displayProgressBar = authState is AuthState.Loading,
                                 onClick = {
                                     focusManager.clearFocus()
                                     if (validateForm()) {
-                                        onLoginSuccess()
+                                        authViewModel.login(emailValue.value, passwordValue.value)
                                     }
                                 }
                             )
@@ -267,7 +293,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                     onClick = {
                         focusManager.clearFocus()
                         if (validateForm()) {
-                            onLoginSuccess()
+                            authViewModel.login(emailValue.value, passwordValue.value)
                         }
                     }
                 ) {

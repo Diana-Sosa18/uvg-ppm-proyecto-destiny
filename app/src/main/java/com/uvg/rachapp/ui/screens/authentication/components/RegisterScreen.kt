@@ -25,9 +25,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
+import com.uvg.rachapp.viewModels.AuthViewModel
+import com.uvg.rachapp.viewModels.AuthState
 
 
 private val FACEBOOK_COLOR = Color(0xFF1877F2)
@@ -45,7 +49,6 @@ fun RegisterScreen(navController: NavHostController) {
     var passwordVisibility by remember { mutableStateOf(false) }
     var confirmPasswordVisibility by remember { mutableStateOf(false) }
 
-    // Variables de error
     var nameError by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var phoneError by remember { mutableStateOf("") }
@@ -53,6 +56,9 @@ fun RegisterScreen(navController: NavHostController) {
     var confirmPasswordError by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
@@ -119,6 +125,12 @@ fun RegisterScreen(navController: NavHostController) {
         return isValid
     }
 
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            navController.popBackStack()
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -151,12 +163,23 @@ fun RegisterScreen(navController: NavHostController) {
                 )
             }
 
+            if (authState is AuthState.Error) {
+                Text(
+                    text = (authState as AuthState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp) // Menos espacio para errores
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 TransparentTextField(
                     textFieldValue = nameValue,
@@ -272,7 +295,12 @@ fun RegisterScreen(navController: NavHostController) {
                         onDone = {
                             focusManager.clearFocus()
                             if (validateForm()) {
-                                // TODO: Lógica de registro
+                                authViewModel.register(
+                                    emailValue.value,
+                                    passwordValue.value,
+                                    nameValue.value,
+                                    phoneValue.value
+                                )
                             }
                         }
                     ),
@@ -305,12 +333,17 @@ fun RegisterScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 RoundedButton(
-                    text = "Registrarse",
-                    displayProgressBar = false,
+                    text = if (authState is AuthState.Loading) "Registrando..." else "Registrarse",
+                    displayProgressBar = authState is AuthState.Loading,
                     onClick = {
                         focusManager.clearFocus()
                         if (validateForm()) {
-                            // TODO: Lógica de registro - Solo se ejecuta si las validaciones pasan
+                            authViewModel.register(
+                                emailValue.value,
+                                passwordValue.value,
+                                nameValue.value,
+                                phoneValue.value
+                            )
                         }
                     }
                 )
