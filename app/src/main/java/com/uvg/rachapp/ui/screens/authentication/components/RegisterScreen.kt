@@ -26,19 +26,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
 import com.uvg.rachapp.viewModels.AuthViewModel
 import com.uvg.rachapp.viewModels.AuthState
+import kotlinx.coroutines.delay
 
-
+// Colores locales
 private val FACEBOOK_COLOR = Color(0xFF1877F2)
 private val GMAIL_COLOR = Color(0xFFDB4437)
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
+    println("🟢 [UI] RegisterScreen composed")
 
     val nameValue = remember { mutableStateOf("") }
     val emailValue = remember { mutableStateOf("") }
@@ -60,15 +61,20 @@ fun RegisterScreen(navController: NavHostController) {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
+    println("🟢 [UI] Current authState: $authState")
+
+    // Función para validar formato de email
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
         return email.matches(emailRegex.toRegex())
     }
 
+    // Función para validar teléfono
     fun isValidPhone(phone: String): Boolean {
         return phone.length == 8 && phone.all { it.isDigit() }
     }
 
+    // Función de validación principal
     fun validateForm(): Boolean {
         var isValid = true
 
@@ -125,8 +131,14 @@ fun RegisterScreen(navController: NavHostController) {
         return isValid
     }
 
+    // Manejar éxito del registro
     LaunchedEffect(authState) {
+        println("🟢 [UI] LaunchedEffect triggered - authState: $authState")
+
         if (authState is AuthState.Success) {
+            println("🟢 [UI] SUCCESS detected - navigating back in 1.5s")
+            delay(1500)
+            println("🟢 [UI] Navigating back to login")
             navController.popBackStack()
         }
     }
@@ -145,6 +157,7 @@ fun RegisterScreen(navController: NavHostController) {
             ) {
                 IconButton(
                     onClick = {
+                        println("🟢 [UI] Back button clicked")
                         navController.popBackStack()
                     }
                 ) {
@@ -295,6 +308,7 @@ fun RegisterScreen(navController: NavHostController) {
                         onDone = {
                             focusManager.clearFocus()
                             if (validateForm()) {
+                                println("🟢 [UI] Register button clicked (from keyboard)")
                                 authViewModel.register(
                                     emailValue.value,
                                     passwordValue.value,
@@ -336,14 +350,18 @@ fun RegisterScreen(navController: NavHostController) {
                     text = if (authState is AuthState.Loading) "Registrando..." else "Registrarse",
                     displayProgressBar = authState is AuthState.Loading,
                     onClick = {
+                        println("🟢 [UI] Register button clicked")
                         focusManager.clearFocus()
                         if (validateForm()) {
+                            println("🟢 [UI] Form is valid - calling ViewModel")
                             authViewModel.register(
                                 emailValue.value,
                                 passwordValue.value,
                                 nameValue.value,
                                 phoneValue.value
                             )
+                        } else {
+                            println("🔴 [UI] Form validation failed")
                         }
                     }
                 )
@@ -362,6 +380,7 @@ fun RegisterScreen(navController: NavHostController) {
                         }
                     },
                     onClick = {
+                        println("🟢 [UI] Login text clicked")
                         navController.navigate("login")
                     }
                 )
@@ -416,6 +435,7 @@ fun RegisterScreen(navController: NavHostController) {
                 SocialButton(
                     text = "Registrarse con Facebook",
                     onClick = {
+                        println("🟢 [UI] Facebook button clicked")
                         navController.navigate("facebook_register")
                     },
                     buttonColor = FACEBOOK_COLOR
@@ -424,6 +444,7 @@ fun RegisterScreen(navController: NavHostController) {
                 SocialButton(
                     text = "Registrarse con Gmail",
                     onClick = {
+                        println("🟢 [UI] Gmail button clicked")
                         navController.navigate("gmail_register")
                     },
                     buttonColor = GMAIL_COLOR
