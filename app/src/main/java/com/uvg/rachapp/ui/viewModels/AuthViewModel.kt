@@ -26,38 +26,61 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     fun login(email: String, password: String) {
+        println("🟢 [VM] login() called - email: $email")
         viewModelScope.launch {
             _authState.value = AuthState.Loading
+            println("🟢 [VM] State changed to Loading")
             try {
+                println("🟢 [VM] Calling authRepository.loginUser()")
                 val result = authRepository.loginUser(email, password)
+                println("🟢 [VM] Repository returned - isSuccess: ${result.isSuccess}")
                 if (result.isSuccess && result.getOrNull() != null) {
+                    println("🟢 [VM] Setting state to SUCCESS")
                     _authState.value = AuthState.Success("Login exitoso")
                 } else {
+                    println("🔴 [VM] Login failed - error: ${result.exceptionOrNull()?.message}")
                     _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Error en login")
                 }
             } catch (e: Exception) {
+                println("🔴 [VM] Exception in login: ${e.message}")
                 _authState.value = AuthState.Error(e.message ?: "Error desconocido")
             }
         }
     }
 
     fun register(email: String, password: String, name: String, phone: String) {
+        println("🟢 [VM] register() called - email: $email, name: $name")
         viewModelScope.launch {
             _authState.value = AuthState.Loading
+            println("🟢 [VM] State changed to Loading")
             try {
+                println("🟢 [VM] Calling authRepository.registerUser()")
                 val result = authRepository.registerUser(email, password, name, phone)
-                if (result.isSuccess && result.getOrNull() != null) {
-                    _authState.value = AuthState.Success("Registro exitoso")
+                println("🟢 [VM] Repository returned - isSuccess: ${result.isSuccess}")
+                if (result.isSuccess) {
+                    val user = result.getOrNull()
+                    println("🟢 [VM] User from result: $user")
+                    if (user != null) {
+                        println("🟢 [VM] Setting state to SUCCESS")
+                        _authState.value = AuthState.Success("Registro exitoso")
+                    } else {
+                        println("🔴 [VM] User is null - setting ERROR")
+                        _authState.value = AuthState.Error("Usuario creado pero no se pudo obtener")
+                    }
                 } else {
-                    _authState.value = AuthState.Error(result.exceptionOrNull()?.message ?: "Error en registro")
+                    val error = result.exceptionOrNull()
+                    println("🔴 [VM] Result failed - error: ${error?.message}")
+                    _authState.value = AuthState.Error("Error: ${error?.message}")
                 }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Error desconocido")
+                println("🔴 [VM] Exception in register: ${e.message}")
+                _authState.value = AuthState.Error("Error: ${e.message ?: "Error desconocido"}")
             }
         }
     }
 
     fun registerWithFacebook(email: String, password: String) {
+        println("🟢 [VM] registerWithFacebook() called")
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
@@ -74,6 +97,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun registerWithGmail(email: String, password: String) {
+        println("🟢 [VM] registerWithGmail() called")
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
