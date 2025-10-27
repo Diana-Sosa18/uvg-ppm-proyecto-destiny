@@ -5,7 +5,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.uvg.rachapp.data.local.db.daos.MarkedDayDao
+import com.uvg.rachapp.data.local.db.daos.NoteDao
 import com.uvg.rachapp.data.local.db.entities.StreakDayEntity
+import com.uvg.rachapp.data.local.db.entities.NoteEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,9 +16,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
-@Database(entities = [StreakDayEntity::class], version = 1)
+@Database(entities = [StreakDayEntity::class, NoteEntity::class], version = 2)
 abstract class InAppDatabase : RoomDatabase() {
     abstract fun markedDayDao(): MarkedDayDao
+    abstract fun noteDao(): NoteDao
 
     companion object{
         @Volatile
@@ -28,7 +31,8 @@ abstract class InAppDatabase : RoomDatabase() {
                         context.applicationContext,
                         InAppDatabase::class.java,
                         "streak_db"
-                    ).build().also { INSTANCE = it }
+                    ).fallbackToDestructiveMigration()
+                        .build().also { INSTANCE = it }
             }
         }
     }
@@ -37,7 +41,7 @@ abstract class InAppDatabase : RoomDatabase() {
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-    // Aquí es donde ustedes también pueden proporcionar las instancias de la base de datos y DAOs (gracias a Hilt para inyección de dependencias)
+
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): InAppDatabase {
@@ -45,7 +49,9 @@ object DatabaseModule {
             context,
             InAppDatabase::class.java,
             "streak_db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     @Provides
@@ -53,6 +59,11 @@ object DatabaseModule {
         return database.markedDayDao()
 
 
+    }
+
+    @Provides
+    fun provideNoteDao(database: InAppDatabase): NoteDao {
+        return database.noteDao()
     }
 }
 
