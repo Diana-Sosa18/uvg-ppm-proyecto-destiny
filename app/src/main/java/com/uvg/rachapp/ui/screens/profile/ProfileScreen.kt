@@ -47,7 +47,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Avatar",
                 modifier = Modifier
-                    .size(90.dp)
+                    .size(120.dp)
                     .clip(CircleShape)
                     .background(Color.LightGray)
             )
@@ -117,6 +117,7 @@ fun ProgressCard(title: String, value: String) {
             .width(150.dp)
             .height(70.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
@@ -143,7 +144,7 @@ fun StatsRow(number: String, label: String) {
         Text(
             text = number,
             fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
+            fontSize = 24.sp,
             color = Color(0xFF3A6DFF)
         )
         Spacer(modifier = Modifier.width(8.dp))
