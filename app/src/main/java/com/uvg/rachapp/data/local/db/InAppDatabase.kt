@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Database(entities = [StreakDayEntity::class, NoteEntity::class], version = 2)
 abstract class InAppDatabase : RoomDatabase() {
     abstract fun markedDayDao(): MarkedDayDao
-    abstract fun noteDao(): NoteDao
+
 
     companion object{
         @Volatile
@@ -31,8 +31,7 @@ abstract class InAppDatabase : RoomDatabase() {
                         context.applicationContext,
                         InAppDatabase::class.java,
                         "streak_db"
-                    ).fallbackToDestructiveMigration()
-                        .build().also { INSTANCE = it }
+                    ).build().also { INSTANCE = it }
             }
         }
     }
@@ -49,9 +48,7 @@ object DatabaseModule {
             context,
             InAppDatabase::class.java,
             "streak_db"
-        )
-        .fallbackToDestructiveMigration()
-        .build()
+        ).build()
     }
 
     @Provides
@@ -61,9 +58,6 @@ object DatabaseModule {
 
     }
 
-    @Provides
-    fun provideNoteDao(database: InAppDatabase): NoteDao {
-        return database.noteDao()
-    }
+
 }
 
