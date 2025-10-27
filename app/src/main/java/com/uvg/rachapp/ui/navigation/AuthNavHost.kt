@@ -1,13 +1,10 @@
 package com.uvg.rachapp.ui.navigation
-
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.uvg.rachapp.ui.screens.authentication.LoginScreen
-import com.uvg.rachapp.ui.screens.authentication.components.FacebookRegisterScreen
-import com.uvg.rachapp.ui.screens.authentication.components.GmailRegisterScreen
 import com.uvg.rachapp.ui.screens.authentication.components.RegisterScreen
 
 @Composable
@@ -22,16 +19,11 @@ fun AuthNavHost(
         modifier = modifier
     ) {
         composable(Screen.Login.route) {
-            LoginScreen(navController = navController, onLoginSuccess = onLoginSuccess)
+            LoginScreen(
+                navController = navController,
+                onLoginSuccess = onLoginSuccess
+            )
         }
-        composable(Screen.Register.route) {
-            RegisterScreen(navController = navController)
-        }
-        composable("facebook_register") {
-            FacebookRegisterScreen(navController = navController)
-        }
-        composable("gmail_register") {
-            GmailRegisterScreen(navController = navController)
-        }
+        composable(Screen.Register.route) { RegisterScreen(navController) }
     }
 }
