@@ -1,5 +1,6 @@
 package com.uvg.rachapp.ui.screens.authentication
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,26 +50,69 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.uvg.rachapp.R
-
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
-
-
+import com.uvg.rachapp.viewModels.AuthViewModel
+import com.uvg.rachapp.viewModels.AuthState
 
 @Composable
 fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
-    val emailValue = rememberSaveable{ mutableStateOf("")}
-    val passwordValue = rememberSaveable{mutableStateOf("")}
-    var passwordVisibility by remember { mutableStateOf(false)}
+    val emailValue = rememberSaveable { mutableStateOf("") }
+    val passwordValue = rememberSaveable { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
+        return email.matches(emailRegex.toRegex())
+    }
+
+    fun validateForm(): Boolean {
+        var isValid = true
+
+        if (emailValue.value.isEmpty()) {
+            emailError = "El email es requerido"
+            isValid = false
+        } else if (!isValidEmail(emailValue.value)) {
+            emailError = "Ingresa un email válido"
+            isValid = false
+        } else {
+            emailError = ""
+        }
+
+        if (passwordValue.value.isEmpty()) {
+            passwordError = "La contraseña es requerida"
+            isValid = false
+        } else if (passwordValue.value.length < 6) {
+            passwordError = "Mínimo 6 caracteres"
+            isValid = false
+        } else {
+            passwordError = ""
+        }
+
+        return isValid
+    }
+
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            onLoginSuccess()
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-    ){
+    ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Login Image",
@@ -77,15 +122,15 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
-        ){
+        ) {
             ConstraintLayout {
                 val (surface, fab) = createRefs()
 
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(400.dp)
-                        .constrainAs(surface){
+                        .height(450.dp)
+                        .constrainAs(surface) {
                             bottom.linkTo(parent.bottom)
                         },
                     color = Color.White,
@@ -93,26 +138,39 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                         topStartPercent = 8,
                         topEndPercent = 8
                     )
-                ){
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
                         verticalArrangement = Arrangement.SpaceEvenly
-                    ){
+                    ) {
                         Text(
                             text = stringResource(R.string.login_title),
                             style = MaterialTheme.typography.headlineMedium.copy(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         )
+
+                        // Mostrar error de Firebase
+                        if (authState is AuthState.Error) {
+                            Text(
+                                text = (authState as AuthState.Error).message,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+                        }
+
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ){
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
                             TransparentTextField(
                                 textFieldValue = emailValue,
                                 textLabel = stringResource(R.string.email_label),
@@ -122,8 +180,21 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                         focusManager.moveFocus(FocusDirection.Down)
                                     }
                                 ),
-                                imeAction = ImeAction.Next,
+                                imeAction = ImeAction.Next
                             )
+
+                            if (emailError.isNotEmpty()) {
+                                Text(
+                                    text = emailError,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 4.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
 
                             TransparentTextField(
                                 textFieldValue = passwordValue,
@@ -132,6 +203,9 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                 keyboardActions = KeyboardActions(
                                     onDone = {
                                         focusManager.clearFocus()
+                                        if (validateForm()) {
+                                            authViewModel.login(emailValue.value, passwordValue.value)
+                                        }
                                     }
                                 ),
                                 imeAction = ImeAction.Done,
@@ -147,12 +221,23 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                         )
                                     }
                                 },
-                                visualTransformation = if(passwordVisibility){
+                                visualTransformation = if (passwordVisibility) {
                                     VisualTransformation.None
                                 } else {
                                     PasswordVisualTransformation()
                                 }
                             )
+
+                            if (passwordError.isNotEmpty()) {
+                                Text(
+                                    text = passwordError,
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 4.dp)
+                                )
+                            }
 
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
@@ -166,13 +251,15 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ){
-                            val context = LocalContext.current
+                        ) {
                             RoundedButton(
-                                text = stringResource(R.string.login_button),
-                                displayProgressBar = false,
+                                text = if (authState is AuthState.Loading) "Iniciando sesión..." else stringResource(R.string.login_button),
+                                displayProgressBar = authState is AuthState.Loading,
                                 onClick = {
-                                    onLoginSuccess()
+                                    focusManager.clearFocus()
+                                    if (validateForm()) {
+                                        authViewModel.login(emailValue.value, passwordValue.value)
+                                    }
                                 }
                             )
 
@@ -185,12 +272,11 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                             color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.Bold
                                         )
-                                    ){
+                                    ) {
                                         append(stringResource(R.string.sign_up))
                                     }
                                 }
                             ) {
-
                                 navController.navigate("register")
                             }
                         }
@@ -200,14 +286,17 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                 FloatingActionButton(
                     modifier = Modifier
                         .size(72.dp)
-                        .constrainAs(fab){
+                        .constrainAs(fab) {
                             top.linkTo(surface.top, margin = (-36).dp)
                             end.linkTo(surface.end, margin = 36.dp)
                         },
                     onClick = {
-                        //
+                        focusManager.clearFocus()
+                        if (validateForm()) {
+                            authViewModel.login(emailValue.value, passwordValue.value)
+                        }
                     }
-                ){
+                ) {
                     Icon(
                         modifier = Modifier.size(42.dp),
                         imageVector = Icons.Default.ArrowForward,
