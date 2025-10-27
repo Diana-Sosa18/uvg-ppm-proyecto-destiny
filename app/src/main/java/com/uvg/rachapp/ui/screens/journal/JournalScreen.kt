@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,10 +38,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,55 +48,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
-
+import com.uvg.rachapp.ui.viewModels.JournalViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.uvg.rachapp.data.repository.NotePreview
 
-// Este será el NOteEntity para la base recordaaar =======================
-data class NotePreview(
-    val id: Int,
-    val title: String,
-    val content: String,
-    val timestamp: Long
-)
 
 @Composable
-fun JournalScreen() {
+fun JournalScreen( journalViewModel: JournalViewModel = hiltViewModel()
+) {
 
-    var showAddNoteForm by remember { mutableStateOf(false) }
-    var showConfirmDialog by remember { mutableStateOf(false) }
-    var showNoteDetailDialog by remember { mutableStateOf(false) }
-    var selectedNote by remember { mutableStateOf<NotePreview?>(null) }
-    var titleInput by remember { mutableStateOf("") }
-    var contentInput by remember { mutableStateOf("") }
+    val notes by journalViewModel.notesState.collectAsState()
+    val titleInput = journalViewModel.titleInput
+    val contentInput = journalViewModel.contentInput
 
-    var sampleNotes by remember {
-        mutableStateOf(
-            //Notas para probar el mensaje de Advertenca, porqque no se conecta a la base todavia
-            listOf(
-                NotePreview(
-                    id = 1,
-                    title = "Mi primer día",
-                    content = "Hoy fue un día difícil pero lo logré. Me siento orgulloso de mí mismo.",
-                    timestamp = System.currentTimeMillis() - 86400000
-                ),
-                NotePreview(
-                    id = 2,
-                    title = "Reflexión semanal",
-                    content = "Una semana completa sin recaer. Cada día es una victoria.",
-                    timestamp = System.currentTimeMillis() - 172800000
-                ),
-                NotePreview(
-                    id = 3,
-                    title = "Momento de gratitud",
-                    content = "Agradezco el apoyo de mi familia y amigos en este proceso.",
-                    timestamp = System.currentTimeMillis() - 259200000
-                )
-            )
-        )
-    }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -124,7 +91,7 @@ fun JournalScreen() {
             }
 
 
-            if (sampleNotes.isEmpty()) {
+            if (notes.isEmpty()) {
                 EmptyStateView(modifier = Modifier.weight(1f))
             } else {
                 LazyColumn(
@@ -134,12 +101,11 @@ fun JournalScreen() {
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(sampleNotes) { note ->
+                    items(notes) { note ->
                         NoteItemCard(
                             note = note,
                             onClick = {
-                                selectedNote = note
-                                showConfirmDialog = true
+                                journalViewModel.selectNoteForConfirm(note)
                             }
                         )
                     }
@@ -148,7 +114,7 @@ fun JournalScreen() {
 
 
             Button(
-                onClick = { showAddNoteForm = true },
+                onClick = { journalViewModel.openAddNoteForm() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -181,7 +147,7 @@ fun JournalScreen() {
 
 
         AnimatedVisibility(
-            visible = showAddNoteForm,
+            visible = journalViewModel.showAddNoteForm,
             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -189,60 +155,40 @@ fun JournalScreen() {
             AddNoteForm(
                 titleValue = titleInput,
                 contentValue = contentInput,
-                onTitleChange = { titleInput = it },
-                onContentChange = { contentInput = it },
-                onSave = {
-                    val newNote = NotePreview(
-                        id = (sampleNotes.maxOfOrNull { it.id } ?: 0) + 1,
-                        title = titleInput,
-                        content = contentInput,
-                        timestamp = System.currentTimeMillis()
-                    )
-                    sampleNotes = sampleNotes + newNote
-                    titleInput = ""
-                    contentInput = ""
-                    showAddNoteForm = false
-                },
-                onCancel = {
-                    titleInput = ""
-                    contentInput = ""
-                    showAddNoteForm = false
-                }
+
+                onTitleChange = { journalViewModel.onTitleChange(it) },
+                onContentChange = { journalViewModel.onContentChange(it) },
+                onSave = { journalViewModel.addNoteFromInputs() },
+                onCancel = { journalViewModel.closeAddNoteForm() }
             )
         }
 
     }
 
 
-    if (showConfirmDialog) {
+    if (journalViewModel.showConfirmDialog) {
         ConfirmViewDialog(
-            onConfirm = {
-                showConfirmDialog = false
-                showNoteDetailDialog = true
-            },
-            onDismiss = {
-                showConfirmDialog = false
-                selectedNote = null
-            }
+            onConfirm = { journalViewModel.confirmViewSelectedNote() },
+            onDismiss = { journalViewModel.dismissConfirm() }
         )
     }
 
 
-    if (showNoteDetailDialog && selectedNote != null) {
+    if (journalViewModel.showNoteDetailDialog && journalViewModel.selectedNote != null) {
         NoteDetailDialog(
-            note = selectedNote!!,
-            onDismiss = {
-                showNoteDetailDialog = false
-                selectedNote = null
+            note = journalViewModel.selectedNote!!,
+            onDismiss = { journalViewModel.dismissNoteDetail() },
+            onDelete = { note ->
+                journalViewModel.deleteNote(note)
             }
         )
     }
 }
 
 @Composable
-fun EmptyStateView(modifier: Modifier) {
+fun EmptyStateView(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -285,7 +231,7 @@ fun NoteItemCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Fecha
+
             Text(
                 text = formatTimestamp(note.timestamp),
                 fontSize = 12.sp,
@@ -320,7 +266,7 @@ fun AddNoteForm(
                 .padding(20.dp)
         ) {
             Text(
-                text = stringResource(R.string.journal_add_note),
+                text = "Agregar nota",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF1A1A1A)
@@ -328,12 +274,11 @@ fun AddNoteForm(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-
             OutlinedTextField(
                 value = titleValue,
                 onValueChange = onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(R.string.journal_note_title_hint)) },
+                placeholder = { Text("Título") },
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
@@ -344,14 +289,13 @@ fun AddNoteForm(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-
             OutlinedTextField(
                 value = contentValue,
                 onValueChange = onContentChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
-                placeholder = { Text(stringResource(R.string.journal_note_content_hint)) },
+                placeholder = { Text("Escribe aquí tu nota...") },
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
@@ -361,7 +305,6 @@ fun AddNoteForm(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -374,7 +317,7 @@ fun AddNoteForm(
                         containerColor = Color(0xFF9E9E9E)
                     )
                 ) {
-                    Text(stringResource(R.string.journal_cancel_button))
+                    Text("Cancelar")
                 }
 
                 Button(
@@ -384,7 +327,7 @@ fun AddNoteForm(
                         containerColor = Color(0xFF1E2A78)
                     )
                 ) {
-                    Text(stringResource(R.string.journal_save_button))
+                    Text("Guardar")
                 }
             }
         }
@@ -433,10 +376,13 @@ fun ConfirmViewDialog(
     )
 }
 
+
+
 @Composable
 fun NoteDetailDialog(
     note: NotePreview,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDelete: (NotePreview) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -463,15 +409,21 @@ fun NoteDetailDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.journal_detail_close),
-                    color = Color(0xFF1E2A78)
-                )
+            Row {
+                TextButton(onClick = {
+                    onDelete(note)
+                }) {
+                    Text("Eliminar", color = Color.Red)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(onClick = onDismiss) {
+                    Text("Cerrar", color = Color(0xFF1E2A78))
+                }
             }
         }
     )
 }
+
 
 private fun formatTimestamp(timestamp: Long): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
