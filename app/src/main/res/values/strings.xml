@@ -59,7 +59,7 @@
     <string name="articulo4_title">El alcohol y su impacto en las relaciones personales</string>
     <string name="articulo4_desc">Muestra cómo el consumo excesivo puede dañar la confianza y la convivencia con familia y amigos.</string>
 
-    <!-- Etiquetas para los botones de la barra de navegación inferior -->
+    <!-- Barra de navegación -->
     <string name="bottom_nav_journal">Diario</string>
     <string name="bottom_nav_articles">Artículos</string>
     <string name="bottom_nav_home">Inicio</string>
