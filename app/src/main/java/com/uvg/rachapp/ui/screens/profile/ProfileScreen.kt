@@ -29,7 +29,7 @@ import com.uvg.rachapp.ui.screens.authentication.components.BottomNavItem
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier, onLogout: () -> Unit ) {
 //Lo pongo así por si más adelante hay que modificar la lógica de cerrar sesión, apartandola de lo visual
-     ProfileScreenContent(onLogout)
+    ProfileScreenContent(onLogout)
 }
 
 
@@ -73,7 +73,7 @@ fun ProfileScreenContent(onLogout: () -> Unit) {
                     fontSize = 12.sp
                 )
             }
-    }
+        }
         // -------- Avatar + nombre --------
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_foreground),
