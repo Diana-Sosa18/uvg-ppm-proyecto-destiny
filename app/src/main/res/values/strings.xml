@@ -4,14 +4,14 @@
 
     <!-- Login Screen -->
     <string name="login_title">Inicia sesion en tu cuenta</string>
-    <string name="email_label">Email</string>
-    <string name="password_label">Password</string>
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="login_button">Login</string>
-    <string name="no_account">Do not have an Account?</string>
-    <string name="sign_up">Sign up</string>
-    <string name="toggle_password">Toggle Password Icon</string>
-    <string name="forward_icon">Forward Icon</string>
+    <string name="email_label">Gmail</string>
+    <string name="password_label">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste contraseña?</string>
+    <string name="login_button">Inicio de sesión</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="toggle_password">Icono de alternar contraseña</string>
+    <string name="forward_icon">Icono de avance</string>
 
     <!-- RegisterScreen -->
     <string name="create_account">Crear una cuenta</string>
