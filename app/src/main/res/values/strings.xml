@@ -4,26 +4,106 @@
 
     <!-- Login Screen -->
     <string name="login_title">Inicia sesion en tu cuenta</string>
-    <string name="email_label">Email</string>
-    <string name="password_label">Password</string>
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="login_button">Login</string>
-    <string name="no_account">Do not have an Account?</string>
-    <string name="sign_up">Sign up</string>
-    <string name="toggle_password">Toggle Password Icon</string>
-    <string name="forward_icon">Forward Icon</string>
+    <string name="email_label">Gmail</string>
+    <string name="password_label">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste contraseña?</string>
+    <string name="login_button">Inicio de sesión</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="toggle_password">Icono de alternar contraseña</string>
+    <string name="forward_icon">Icono de avance</string>
 
-    <!-- Register Screen -->
-    <string name="register_title">Pantalla de Registro</string>
-    <string name="back_to_login">Volver al Login</string>
+    <!-- RegisterScreen -->
+    <string name="create_account">Crear una cuenta</string>
+    <string name="back_icon">Back Icon</string>
+    <string name="already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="sign_in">Iniciar Sesión</string>
+    <string name="or">O</string>
+    <string name="register_with">Registrarse con</string>
+
+    <!-- Campos del formulario -->
+    <string name="name">Nombre</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Número de teléfono</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar Contraseña</string>
+
+    <!-- Botones -->
+    <string name="register">Registrarse</string>
+    <string name="registering">Registrando…</string>
+    <string name="register_with_facebook">Registrarse con Facebook</string>
+    <string name="register_with_gmail">Registrarse con Gmail</string>
+
+    <!-- Mensajes de error -->
+    <string name="error_name_required">El nombre es requerido</string>
+    <string name="error_name_min_length">Mínimo 2 caracteres</string>
+    <string name="error_email_required">El email es requerido</string>
+    <string name="error_email_invalid">Ingresa un email válido</string>
+    <string name="error_phone_required">El teléfono es requerido</string>
+    <string name="error_phone_length">Debe tener 8 dígitos</string>
+    <string name="error_password_required">La contraseña es requerida</string>
+    <string name="error_password_min_length">Mínimo 6 caracteres</string>
+    <string name="error_confirm_password_required">Confirma tu contraseña</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden</string>
+
+    <!-- Iconos y accesibilidad -->
+    <string name="hide_password">Ocultar contraseña</string>
+    <string name="show_password">Mostrar contraseña</string>
+
+    <!-- Registro con Gmail -->
+    <string name="gmail_registration_title">Registro con Gmail</string>
+    <string name="back">Back</string>
+    <string name="gmail_icon">Gmail Icon</string>
+    <string name="gmail_email">Email de Gmail</string>
+    <string name="gmail_password">Contraseña de Gmail</string>
+    <string name="register_with_gmail_button">Registrarse con Gmail</string>
+    <string name="registering_gmail">Registrando…</string>
+    <string name="gmail_auth_message">Este registro usa la autenticación de Google</string>
+    <!-- ELIMINADO: <string name="toggle_password">Toggle Password</string> - YA EXISTE -->
+
+    <!-- Mensajes de error específicos de Gmail -->
+    <string name="error_email_required_gmail">El email es requerido</string>
+    <string name="error_email_invalid_gmail">Ingresa un email válido</string>
+    <string name="error_email_not_gmail">Debe ser un email de Gmail (@gmail.com)</string>
+    <string name="error_password_required_gmail">La contraseña es requerida</string>
+    <string name="error_password_min_length_gmail">Mínimo 6 caracteres</string>
+
+    <!-- Registro con Facebook -->
+    <string name="facebook_registration_title">Registro con Facebook</string>
+    <string name="facebook_email_or_phone">Email o teléfono</string>
+    <string name="facebook_password">Contraseña</string>
+    <string name="register_with_facebook_button">Registrarse con Facebook</string>
+    <string name="registering_facebook">Registrando…</string>
+    <string name="facebook_terms">Al registrarte, aceptas nuestros Términos y Política de Privacidad</string>
+    <!-- ELIMINADO: <string name="toggle_password_facebook">Toggle Password</string> - YA EXISTE toggle_password -->
+
+    <!-- Mensajes de error específicos de Facebook -->
+    <string name="error_email_phone_required">El email o teléfono es requerido</string>
+    <string name="error_email_phone_invalid">Ingresa un email válido o teléfono de 8 dígitos</string>
+    <string name="error_password_required_facebook">La contraseña es requerida</string>
+    <string name="error_password_min_length_facebook">Mínimo 6 caracteres</string>
 
     <!-- Image Content Descriptions -->
     <string name="logo_image">Logo de la aplicación</string>
 
     <!-- Journal Screen -->
-    <string name="title_journal_screen">Mi Diario</string>
-    <string name="welcome_journal_message">¡Bienvenido al Journal!</string>
+    <string name="journal_title">Mi Diario</string>
+    <string name="journal_empty_state">No tienes notas aún.\nComienza escribiendo tu primera entrada.</string>
+    <string name="journal_add_note">Agregar Nota</string>
 
+    <string name="journal_note_title_hint">Título de la nota</string>
+    <string name="journal_note_content_hint">Escribe tu nota aquí…</string>
+    <string name="journal_save_button">Guardar</string>
+    <string name="journal_cancel_button">Cancelar</string>
+
+    <string name="journal_confirm_title">Confirmación de Privacidad</string>
+    <string name="journal_confirm_message">¿Está seguro de que desea ver el contenido de esta nota?</string>
+    <string name="journal_confirm_yes">Aceptar</string>
+    <string name="journal_confirm_no">Cancelar</string>
+
+    <string name="journal_detail_close">Cerrar</string>
+
+    <string name="journal_date_format">dd/MM/yyyy HH:mm</string>
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
     <string name="home_streak_title">Racha</string>
@@ -48,7 +128,7 @@
     <string name="articulos_title">Artículos</string>
 
     <string name="articulo1_title">El efecto de la dopamina en las redes sociales</string>
-    <string name="articulo1_desc">Explica cómo los “me gusta” y notificaciones generan placer en el cerebro y pueden causar adicción digital.</string>
+    <string name="articulo1_desc">Explica cómo los \"me gusta\" y notificaciones generan placer en el cerebro y pueden causar adicción digital.</string>
 
     <string name="articulo2_title">Alcohol y sueño: una combinación engañosa</string>
     <string name="articulo2_desc">Aunque ayuda a dormir rápido, el alcohol interrumpe el descanso y afecta la energía del día siguiente.</string>
@@ -58,6 +138,16 @@
 
     <string name="articulo4_title">El alcohol y su impacto en las relaciones personales</string>
     <string name="articulo4_desc">Muestra cómo el consumo excesivo puede dañar la confianza y la convivencia con familia y amigos.</string>
+
+    <string name="articulo1_full">Cada notificación, “me gusta” o comentario activa una pequeña dosis de dopamina en el cerebro, el mismo químico que produce placer y motivación. Este ciclo de recompensa hace que muchas personas revisen constantemente sus redes, buscando esa sensación de satisfacción inmediata. El artículo explica cómo este hábito puede volverse adictivo y ofrece formas de usar las redes sin depender de esa gratificación constante.</string>
+
+    <string name="articulo2_full">Aunque muchas personas creen que tomar una copa ayuda a dormir mejor, en realidad el alcohol altera las fases del sueño y evita que el cuerpo descanse por completo. Dormir bajo sus efectos puede causar cansancio, falta de concentración y mal humor al día siguiente. El artículo detalla por qué el descanso natural es más reparador y cómo mejorar la calidad del sueño sin recurrir al alcohol.</string>
+
+    <string name="articulo3_full">Este artículo te guía paso a paso para reducir el tiempo que pasas frente a las pantallas. Propone pequeños cambios, como desactivar notificaciones, establecer horarios sin teléfono y practicar actividades que no involucren tecnología. También explica cómo una pausa digital puede ayudarte a concentrarte mejor, sentirte más tranquilo y conectar más con tu entorno real.</string>
+
+    <string name="articulo4_full">El consumo excesivo de alcohol no solo afecta la salud física, sino también la emocional y social. Puede provocar discusiones, pérdida de confianza y distanciamiento con las personas más cercanas. Este artículo explora cómo la sobriedad permite mejorar la comunicación, reconstruir vínculos y fortalecer las relaciones desde la empatía y la claridad emocional.</string>
+
+    <string name="cerrar">Cerrar</string>
 
     <!-- Barra de navegación -->
     <string name="bottom_nav_journal">Diario</string>
