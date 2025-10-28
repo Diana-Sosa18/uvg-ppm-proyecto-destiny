@@ -73,6 +73,16 @@
     <string name="articulo4_title">El alcohol y su impacto en las relaciones personales</string>
     <string name="articulo4_desc">Muestra cómo el consumo excesivo puede dañar la confianza y la convivencia con familia y amigos.</string>
 
+    <string name="articulo1_full">Cada notificación, “me gusta” o comentario activa una pequeña dosis de dopamina en el cerebro, el mismo químico que produce placer y motivación. Este ciclo de recompensa hace que muchas personas revisen constantemente sus redes, buscando esa sensación de satisfacción inmediata. El artículo explica cómo este hábito puede volverse adictivo y ofrece formas de usar las redes sin depender de esa gratificación constante.</string>
+
+    <string name="articulo2_full">Aunque muchas personas creen que tomar una copa ayuda a dormir mejor, en realidad el alcohol altera las fases del sueño y evita que el cuerpo descanse por completo. Dormir bajo sus efectos puede causar cansancio, falta de concentración y mal humor al día siguiente. El artículo detalla por qué el descanso natural es más reparador y cómo mejorar la calidad del sueño sin recurrir al alcohol.</string>
+
+    <string name="articulo3_full">Este artículo te guía paso a paso para reducir el tiempo que pasas frente a las pantallas. Propone pequeños cambios, como desactivar notificaciones, establecer horarios sin teléfono y practicar actividades que no involucren tecnología. También explica cómo una pausa digital puede ayudarte a concentrarte mejor, sentirte más tranquilo y conectar más con tu entorno real.</string>
+
+    <string name="articulo4_full">El consumo excesivo de alcohol no solo afecta la salud física, sino también la emocional y social. Puede provocar discusiones, pérdida de confianza y distanciamiento con las personas más cercanas. Este artículo explora cómo la sobriedad permite mejorar la comunicación, reconstruir vínculos y fortalecer las relaciones desde la empatía y la claridad emocional.</string>
+
+    <string name="cerrar">Cerrar</string>
+
     <!-- Etiquetas para los botones de la barra de navegación inferior -->
     <string name="bottom_nav_journal">Diario</string>
     <string name="bottom_nav_articles">Artículos</string>
