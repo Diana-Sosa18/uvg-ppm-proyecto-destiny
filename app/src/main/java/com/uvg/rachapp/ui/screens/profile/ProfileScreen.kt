@@ -1,5 +1,6 @@
 package com.uvg.rachapp.ui.screens.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,11 +33,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
+import com.uvg.rachapp.viewModels.AuthViewModel
 
 
 @Composable
-fun ProfileScreen(onLogout: () -> Unit) {
+fun ProfileScreen(
+    onLogout: () -> Unit,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -44,6 +50,18 @@ fun ProfileScreen(onLogout: () -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Título superior
+        Text(
+            text = "Mi Perfil",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(id = R.color.galaxy),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .align(Alignment.Start)
+        )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -64,13 +82,13 @@ fun ProfileScreen(onLogout: () -> Unit) {
             Column {
                 Text(
                     text = "User Name",
-                    fontSize = 28.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.galaxy)
                 )
                 Text(
                     text = "correo@gmail.com",
-                    fontSize = 13.sp,
+                    fontSize = 16.sp,
                     color = colorResource(id = R.color.galaxy)
                 )
             }
@@ -96,9 +114,10 @@ fun ProfileScreen(onLogout: () -> Unit) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Center
         ) {
             ProgressCard(title = "Racha actual", value = currentStreak.toString())
+            Spacer(modifier = Modifier.width(8.dp))
             ProgressCard(title = "Racha más larga", value = longestStreak.toString())
         }
 
@@ -147,23 +166,33 @@ fun ProfileScreen(onLogout: () -> Unit) {
 
         // Cerrar sesión
         Spacer(modifier = Modifier.height(32.dp))
+
         Button(
-            onClick = onLogout,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.universe),
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(12.dp),
+            onClick = {
+                onLogout()
+            },
             modifier = Modifier
                 .fillMaxWidth(0.6f)
-                .height(48.dp)
-        ) {
-            Text(
-                text = "Cerrar sesión",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                .padding(horizontal = 16.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.venus)
             )
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Cerrar sesión",
+                    color = colorResource(id = R.color.universe),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
+
     }
 }
 
@@ -172,10 +201,12 @@ fun ProgressCard(title: String, value: String) {
     Card(
         modifier = Modifier
             .width(150.dp)
-            .height(70.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.blue_gray)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
-        shape = RoundedCornerShape(8.dp)
+            .height(80.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(5.dp, colorResource(id = R.color.venus))
     ) {
         Column(
             modifier = Modifier
@@ -185,7 +216,7 @@ fun ProgressCard(title: String, value: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(title,
-                fontSize = 13.sp)
+                fontSize = 16.sp)
 
             Spacer(modifier = Modifier.height(5.dp))
 
