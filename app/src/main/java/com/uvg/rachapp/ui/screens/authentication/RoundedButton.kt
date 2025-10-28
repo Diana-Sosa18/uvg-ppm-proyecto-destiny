@@ -18,14 +18,14 @@ fun RoundedButton(
     modifier: Modifier = Modifier,
     text: String,
     displayProgressBar: Boolean = false,
-    onClick: () -> Unit
+    onClick: @Composable () -> Unit
 ) {
     if (!displayProgressBar) {
         Button(
             modifier = modifier
                 .width(280.dp)
                 .height(50.dp),
-            onClick = onClick,
+            onClick = onClick as () -> Unit,
             shape = RoundedCornerShape(50),
         ) {
             Text(

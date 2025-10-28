@@ -241,13 +241,19 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
 
                             ClickableText(
                                 text = buildAnnotatedString {
-                                    append(stringResource(R.string.forgot_password))
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    ) {
+                                        append(stringResource(R.string.forgot_password))
+                                    }
                                 },
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     textAlign = TextAlign.End
                                 ),
                                 onClick = {
-                                    println("Forgot password clicked")
                                     navController.navigate("forgot_password")
                                 }
                             )
