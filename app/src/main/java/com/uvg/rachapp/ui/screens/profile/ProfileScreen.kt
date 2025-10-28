@@ -3,9 +3,11 @@ package com.uvg.rachapp.ui.screens.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
@@ -103,16 +107,25 @@ fun ProfileScreen(onLogout: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         // Barra de progreso
-        LinearProgressIndicator(
-            progress = progress.run { coerceIn(0f, 1f) },
+        Box(
             modifier = Modifier
                 .width(316.dp)
-                .height(18.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            color = colorResource(id = R.color.universe),
-            trackColor = colorResource(id = R.color.blue_gray),
-            strokeCap = StrokeCap.Butt
-        )
+                .height(20.dp)
+                .background(
+                    color = colorResource(id = R.color.blue_gray),
+                    shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
+                    .background(
+                        color = colorResource(id = R.color.galaxy),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -132,6 +145,26 @@ fun ProfileScreen(onLogout: () -> Unit) {
             StatsRow(number = "120", label = "días alimentando a Destiny")
             StatsRow(number = "12", label = "artículos leídos")
             StatsRow(number = "23", label = "notas creadas")
+        }
+
+        // Cerrar sesión
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = onLogout,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(id = R.color.universe),
+                contentColor = Color.White
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(48.dp)
+        ) {
+            Text(
+                text = "Cerrar sesión",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -154,8 +187,7 @@ fun ProgressCard(title: String, value: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(title,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.W400)
+                fontSize = 13.sp)
 
             Spacer(modifier = Modifier.height(5.dp))
 
@@ -173,12 +205,12 @@ fun StatsRow(number: String, label: String) {
             .fillMaxWidth()
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Bottom // base temporal
+        verticalAlignment = Alignment.Bottom
     ) {
         Text(
             text = number,
-            fontWeight = FontWeight.W500,
-            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
             color = colorResource(id = R.color.universe),
             modifier = Modifier.alignByBaseline()
         )
@@ -186,7 +218,6 @@ fun StatsRow(number: String, label: String) {
         Text(
             text = label,
             fontSize = 16.sp,
-            fontWeight = FontWeight.W300,
             modifier = Modifier.alignByBaseline()
         )
     }
