@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.uvg.rachapp.presentation.articulos.NewsScreen
+import com.uvg.rachapp.ui.screens.news.NewsScreen
 import com.uvg.rachapp.ui.screens.home.HomeScreen
 import com.uvg.rachapp.ui.screens.journal.JournalScreen
 
