@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
 import com.uvg.rachapp.viewModels.AuthViewModel
@@ -39,7 +42,7 @@ private val GMAIL_COLOR = Color(0xFFDB4437)
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
-    println("🟢 [UI] RegisterScreen composed")
+    val context = LocalContext.current
 
     val nameValue = remember { mutableStateOf("") }
     val emailValue = remember { mutableStateOf("") }
@@ -61,8 +64,6 @@ fun RegisterScreen(navController: NavHostController) {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
-    println("🟢 [UI] Current authState: $authState")
-
     // Función para validar formato de email
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
@@ -79,50 +80,50 @@ fun RegisterScreen(navController: NavHostController) {
         var isValid = true
 
         if (nameValue.value.isEmpty()) {
-            nameError = "El nombre es requerido"
+            nameError = context.getString(R.string.error_name_required)
             isValid = false
         } else if (nameValue.value.length < 2) {
-            nameError = "Mínimo 2 caracteres"
+            nameError = context.getString(R.string.error_name_min_length)
             isValid = false
         } else {
             nameError = ""
         }
 
         if (emailValue.value.isEmpty()) {
-            emailError = "El email es requerido"
+            emailError = context.getString(R.string.error_email_required)
             isValid = false
         } else if (!isValidEmail(emailValue.value)) {
-            emailError = "Ingresa un email válido"
+            emailError = context.getString(R.string.error_email_invalid)
             isValid = false
         } else {
             emailError = ""
         }
 
         if (phoneValue.value.isEmpty()) {
-            phoneError = "El teléfono es requerido"
+            phoneError = context.getString(R.string.error_phone_required)
             isValid = false
         } else if (!isValidPhone(phoneValue.value)) {
-            phoneError = "Debe tener 8 dígitos"
+            phoneError = context.getString(R.string.error_phone_length)
             isValid = false
         } else {
             phoneError = ""
         }
 
         if (passwordValue.value.isEmpty()) {
-            passwordError = "La contraseña es requerida"
+            passwordError = context.getString(R.string.error_password_required)
             isValid = false
         } else if (passwordValue.value.length < 6) {
-            passwordError = "Mínimo 6 caracteres"
+            passwordError = context.getString(R.string.error_password_min_length)
             isValid = false
         } else {
             passwordError = ""
         }
 
         if (confirmPasswordValue.value.isEmpty()) {
-            confirmPasswordError = "Confirma tu contraseña"
+            confirmPasswordError = context.getString(R.string.error_confirm_password_required)
             isValid = false
         } else if (passwordValue.value != confirmPasswordValue.value) {
-            confirmPasswordError = "Las contraseñas no coinciden"
+            confirmPasswordError = context.getString(R.string.error_passwords_not_match)
             isValid = false
         } else {
             confirmPasswordError = ""
@@ -131,14 +132,9 @@ fun RegisterScreen(navController: NavHostController) {
         return isValid
     }
 
-    // Manejar éxito del registro
     LaunchedEffect(authState) {
-        println("🟢 [UI] LaunchedEffect triggered - authState: $authState")
-
         if (authState is AuthState.Success) {
-            println("🟢 [UI] SUCCESS detected - navigating back in 1.5s")
             delay(1500)
-            println("🟢 [UI] Navigating back to login")
             navController.popBackStack()
         }
     }
@@ -157,19 +153,18 @@ fun RegisterScreen(navController: NavHostController) {
             ) {
                 IconButton(
                     onClick = {
-                        println("🟢 [UI] Back button clicked")
                         navController.popBackStack()
                     }
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back Icon",
+                        contentDescription = stringResource(R.string.back_icon),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
                 Text(
-                    text = "Crear una cuenta",
+                    text = stringResource(R.string.create_account),
                     style = MaterialTheme.typography.headlineMedium.copy(
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -196,7 +191,7 @@ fun RegisterScreen(navController: NavHostController) {
             ) {
                 TransparentTextField(
                     textFieldValue = nameValue,
-                    textLabel = "Nombre",
+                    textLabel = stringResource(R.string.name),
                     keyboardType = KeyboardType.Text,
                     keyboardActions = KeyboardActions(
                         onNext = {
@@ -220,7 +215,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                 TransparentTextField(
                     textFieldValue = emailValue,
-                    textLabel = "Email",
+                    textLabel = stringResource(R.string.email),
                     keyboardType = KeyboardType.Email,
                     keyboardActions = KeyboardActions(
                         onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -242,7 +237,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                 TransparentTextField(
                     textFieldValue = phoneValue,
-                    textLabel = "Número de teléfono",
+                    textLabel = stringResource(R.string.phone_number),
                     maxChar = 8,
                     keyboardType = KeyboardType.Phone,
                     keyboardActions = KeyboardActions(
@@ -265,7 +260,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                 TransparentTextField(
                     textFieldValue = passwordValue,
-                    textLabel = "Contraseña",
+                    textLabel = stringResource(R.string.password),
                     keyboardType = KeyboardType.Password,
                     keyboardActions = KeyboardActions(
                         onNext = {
@@ -281,7 +276,7 @@ fun RegisterScreen(navController: NavHostController) {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Lock,
-                                contentDescription = if (passwordVisibility) "Ocultar contraseña" else "Mostrar contraseña"
+                                contentDescription = if (passwordVisibility) stringResource(R.string.hide_password) else stringResource(R.string.show_password)
                             )
                         }
                     },
@@ -302,13 +297,12 @@ fun RegisterScreen(navController: NavHostController) {
 
                 TransparentTextField(
                     textFieldValue = confirmPasswordValue,
-                    textLabel = "Confirmar Contraseña",
+                    textLabel = stringResource(R.string.confirm_password),
                     keyboardType = KeyboardType.Password,
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
                             if (validateForm()) {
-                                println("🟢 [UI] Register button clicked (from keyboard)")
                                 authViewModel.register(
                                     emailValue.value,
                                     passwordValue.value,
@@ -327,7 +321,7 @@ fun RegisterScreen(navController: NavHostController) {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Lock,
-                                contentDescription = if (confirmPasswordVisibility) "Ocultar contraseña" else "Mostrar contraseña"
+                                contentDescription = if (confirmPasswordVisibility) stringResource(R.string.hide_password) else stringResource(R.string.show_password)
                             )
                         }
                     },
@@ -347,28 +341,24 @@ fun RegisterScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 RoundedButton(
-                    text = if (authState is AuthState.Loading) "Registrando..." else "Registrarse",
+                    text = if (authState is AuthState.Loading) stringResource(R.string.registering) else stringResource(R.string.register),
                     displayProgressBar = authState is AuthState.Loading,
                     onClick = {
-                        println("🟢 [UI] Register button clicked")
                         focusManager.clearFocus()
                         if (validateForm()) {
-                            println("🟢 [UI] Form is valid - calling ViewModel")
                             authViewModel.register(
                                 emailValue.value,
                                 passwordValue.value,
                                 nameValue.value,
                                 phoneValue.value
                             )
-                        } else {
-                            println("🔴 [UI] Form validation failed")
                         }
                     }
                 )
 
                 ClickableText(
                     text = buildAnnotatedString {
-                        append("¿Ya tienes una cuenta? ")
+                        append("${stringResource(R.string.already_have_account)} ")
 
                         withStyle(
                             style = SpanStyle(
@@ -376,11 +366,10 @@ fun RegisterScreen(navController: NavHostController) {
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("Iniciar Sesión")
+                            append(stringResource(R.string.sign_in))
                         }
                     },
                     onClick = {
-                        println("🟢 [UI] Login text clicked")
                         navController.navigate("login")
                     }
                 )
@@ -402,7 +391,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                     Text(
                         modifier = Modifier.padding(8.dp),
-                        text = "O",
+                        text = stringResource(R.string.or),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Black
                         )
@@ -417,7 +406,7 @@ fun RegisterScreen(navController: NavHostController) {
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Registrarse con",
+                    text = stringResource(R.string.register_with),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color = MaterialTheme.colorScheme.primary
                     ),
@@ -433,18 +422,16 @@ fun RegisterScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SocialButton(
-                    text = "Registrarse con Facebook",
+                    text = stringResource(R.string.register_with_facebook),
                     onClick = {
-                        println("🟢 [UI] Facebook button clicked")
                         navController.navigate("facebook_register")
                     },
                     buttonColor = FACEBOOK_COLOR
                 )
 
                 SocialButton(
-                    text = "Registrarse con Gmail",
+                    text = stringResource(R.string.register_with_gmail),
                     onClick = {
-                        println("🟢 [UI] Gmail button clicked")
                         navController.navigate("gmail_register")
                     },
                     buttonColor = GMAIL_COLOR
