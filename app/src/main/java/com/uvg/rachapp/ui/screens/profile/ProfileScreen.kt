@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -86,8 +87,8 @@ fun ProfileScreen(onLogout: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Valores de ejemplo
-        val currentStreak = 30
+        // Valores de prueba
+        val currentStreak = 10
         val longestStreak = 61
         val progress = currentStreak.toFloat() / longestStreak.toFloat()
 
@@ -99,17 +100,18 @@ fun ProfileScreen(onLogout: () -> Unit) {
             ProgressCard(title = "Racha más larga", value = longestStreak.toString())
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Barra de progreso
         LinearProgressIndicator(
             progress = progress.run { coerceIn(0f, 1f) },
             modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp)
+                .width(316.dp)
+                .height(18.dp)
                 .clip(RoundedCornerShape(8.dp)),
             color = colorResource(id = R.color.universe),
-            trackColor = colorResource(id = R.color.blue_gray)
+            trackColor = colorResource(id = R.color.blue_gray),
+            strokeCap = StrokeCap.Butt
         )
 
         Spacer(modifier = Modifier.height(24.dp))
