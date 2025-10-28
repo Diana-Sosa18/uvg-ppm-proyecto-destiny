@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -21,18 +23,19 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
 import com.uvg.rachapp.viewModels.AuthViewModel
 import com.uvg.rachapp.viewModels.AuthState
 
 @Composable
 fun GmailRegisterScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
     val emailValue = remember { mutableStateOf("") }
     val passwordValue = remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
-
 
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
@@ -55,23 +58,23 @@ fun GmailRegisterScreen(navController: NavHostController) {
         var isValid = true
 
         if (emailValue.value.isEmpty()) {
-            emailError = "El email es requerido"
+            emailError = context.getString(R.string.error_email_required_gmail)
             isValid = false
         } else if (!isValidEmail(emailValue.value)) {
-            emailError = "Ingresa un email válido"
+            emailError = context.getString(R.string.error_email_invalid_gmail)
             isValid = false
         } else if (!isGmailEmail(emailValue.value)) {
-            emailError = "Debe ser un email de Gmail (@gmail.com)"
+            emailError = context.getString(R.string.error_email_not_gmail)
             isValid = false
         } else {
             emailError = ""
         }
 
         if (passwordValue.value.isEmpty()) {
-            passwordError = "La contraseña es requerida"
+            passwordError = context.getString(R.string.error_password_required_gmail)
             isValid = false
         } else if (passwordValue.value.length < 6) {
-            passwordError = "Mínimo 6 caracteres"
+            passwordError = context.getString(R.string.error_password_min_length_gmail)
             isValid = false
         } else {
             passwordError = ""
@@ -82,7 +85,8 @@ fun GmailRegisterScreen(navController: NavHostController) {
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
-            navController.popBackStack() // Volver al registro principal
+            navController.popBackStack()
+
         }
     }
 
@@ -98,10 +102,13 @@ fun GmailRegisterScreen(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
             }
             Text(
-                text = "Registro con Gmail",
+                text = stringResource(R.string.gmail_registration_title),
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color(0xFFDB4437)
             )
@@ -130,7 +137,7 @@ fun GmailRegisterScreen(navController: NavHostController) {
 
         TransparentTextField(
             textFieldValue = emailValue,
-            textLabel = "Email de Gmail",
+            textLabel = stringResource(R.string.gmail_email),
             keyboardType = KeyboardType.Email,
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
@@ -153,7 +160,7 @@ fun GmailRegisterScreen(navController: NavHostController) {
 
         TransparentTextField(
             textFieldValue = passwordValue,
-            textLabel = "Contraseña de Gmail",
+            textLabel = stringResource(R.string.gmail_password),
             keyboardType = KeyboardType.Password,
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -167,7 +174,10 @@ fun GmailRegisterScreen(navController: NavHostController) {
             visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    Icon(Icons.Default.Lock, contentDescription = "Toggle Password")
+                    Icon(
+                        Icons.Default.Lock,
+                        contentDescription = stringResource(R.string.toggle_password)
+                    )
                 }
             }
         )
@@ -198,7 +208,10 @@ fun GmailRegisterScreen(navController: NavHostController) {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDB4437))
         ) {
             Text(
-                text = if (authState is AuthState.Loading) "Registrando..." else "Registrarse con Gmail",
+                text = if (authState is AuthState.Loading)
+                    stringResource(R.string.registering_gmail)
+                else
+                    stringResource(R.string.register_with_gmail_button),
                 color = Color.White
             )
         }
@@ -206,7 +219,7 @@ fun GmailRegisterScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Este registro usa la autenticación de Google",
+            text = stringResource(R.string.gmail_auth_message),
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center,
             color = Color.Gray

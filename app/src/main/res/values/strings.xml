@@ -4,18 +4,84 @@
 
     <!-- Login Screen -->
     <string name="login_title">Inicia sesion en tu cuenta</string>
-    <string name="email_label">Email</string>
-    <string name="password_label">Password</string>
-    <string name="forgot_password">Forgot Password?</string>
-    <string name="login_button">Login</string>
-    <string name="no_account">Do not have an Account?</string>
-    <string name="sign_up">Sign up</string>
-    <string name="toggle_password">Toggle Password Icon</string>
-    <string name="forward_icon">Forward Icon</string>
+    <string name="email_label">Gmail</string>
+    <string name="password_label">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste contraseña?</string>
+    <string name="login_button">Inicio de sesión</string>
+    <string name="no_account">¿No tienes una cuenta?</string>
+    <string name="sign_up">Registrarse</string>
+    <string name="toggle_password">Icono de alternar contraseña</string>
+    <string name="forward_icon">Icono de avance</string>
 
-    <!-- Register Screen -->
-    <string name="register_title">Pantalla de Registro</string>
-    <string name="back_to_login">Volver al Login</string>
+    <!-- RegisterScreen -->
+    <string name="create_account">Crear una cuenta</string>
+    <string name="back_icon">Back Icon</string>
+    <string name="already_have_account">¿Ya tienes una cuenta?</string>
+    <string name="sign_in">Iniciar Sesión</string>
+    <string name="or">O</string>
+    <string name="register_with">Registrarse con</string>
+
+    <!-- Campos del formulario -->
+    <string name="name">Nombre</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Número de teléfono</string>
+    <string name="password">Contraseña</string>
+    <string name="confirm_password">Confirmar Contraseña</string>
+
+    <!-- Botones -->
+    <string name="register">Registrarse</string>
+    <string name="registering">Registrando…</string>
+    <string name="register_with_facebook">Registrarse con Facebook</string>
+    <string name="register_with_gmail">Registrarse con Gmail</string>
+
+    <!-- Mensajes de error -->
+    <string name="error_name_required">El nombre es requerido</string>
+    <string name="error_name_min_length">Mínimo 2 caracteres</string>
+    <string name="error_email_required">El email es requerido</string>
+    <string name="error_email_invalid">Ingresa un email válido</string>
+    <string name="error_phone_required">El teléfono es requerido</string>
+    <string name="error_phone_length">Debe tener 8 dígitos</string>
+    <string name="error_password_required">La contraseña es requerida</string>
+    <string name="error_password_min_length">Mínimo 6 caracteres</string>
+    <string name="error_confirm_password_required">Confirma tu contraseña</string>
+    <string name="error_passwords_not_match">Las contraseñas no coinciden</string>
+
+    <!-- Iconos y accesibilidad -->
+    <string name="hide_password">Ocultar contraseña</string>
+    <string name="show_password">Mostrar contraseña</string>
+
+    <!-- Registro con Gmail -->
+    <string name="gmail_registration_title">Registro con Gmail</string>
+    <string name="back">Back</string>
+    <string name="gmail_icon">Gmail Icon</string>
+    <string name="gmail_email">Email de Gmail</string>
+    <string name="gmail_password">Contraseña de Gmail</string>
+    <string name="register_with_gmail_button">Registrarse con Gmail</string>
+    <string name="registering_gmail">Registrando…</string>
+    <string name="gmail_auth_message">Este registro usa la autenticación de Google</string>
+    <!-- ELIMINADO: <string name="toggle_password">Toggle Password</string> - YA EXISTE -->
+
+    <!-- Mensajes de error específicos de Gmail -->
+    <string name="error_email_required_gmail">El email es requerido</string>
+    <string name="error_email_invalid_gmail">Ingresa un email válido</string>
+    <string name="error_email_not_gmail">Debe ser un email de Gmail (@gmail.com)</string>
+    <string name="error_password_required_gmail">La contraseña es requerida</string>
+    <string name="error_password_min_length_gmail">Mínimo 6 caracteres</string>
+
+    <!-- Registro con Facebook -->
+    <string name="facebook_registration_title">Registro con Facebook</string>
+    <string name="facebook_email_or_phone">Email o teléfono</string>
+    <string name="facebook_password">Contraseña</string>
+    <string name="register_with_facebook_button">Registrarse con Facebook</string>
+    <string name="registering_facebook">Registrando…</string>
+    <string name="facebook_terms">Al registrarte, aceptas nuestros Términos y Política de Privacidad</string>
+    <!-- ELIMINADO: <string name="toggle_password_facebook">Toggle Password</string> - YA EXISTE toggle_password -->
+
+    <!-- Mensajes de error específicos de Facebook -->
+    <string name="error_email_phone_required">El email o teléfono es requerido</string>
+    <string name="error_email_phone_invalid">Ingresa un email válido o teléfono de 8 dígitos</string>
+    <string name="error_password_required_facebook">La contraseña es requerida</string>
+    <string name="error_password_min_length_facebook">Mínimo 6 caracteres</string>
 
     <!-- Image Content Descriptions -->
     <string name="logo_image">Logo de la aplicación</string>
@@ -62,7 +128,7 @@
     <string name="articulos_title">Artículos</string>
 
     <string name="articulo1_title">El efecto de la dopamina en las redes sociales</string>
-    <string name="articulo1_desc">Explica cómo los “me gusta” y notificaciones generan placer en el cerebro y pueden causar adicción digital.</string>
+    <string name="articulo1_desc">Explica cómo los \"me gusta\" y notificaciones generan placer en el cerebro y pueden causar adicción digital.</string>
 
     <string name="articulo2_title">Alcohol y sueño: una combinación engañosa</string>
     <string name="articulo2_desc">Aunque ayuda a dormir rápido, el alcohol interrumpe el descanso y afecta la energía del día siguiente.</string>
