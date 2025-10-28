@@ -28,6 +28,7 @@ import com.uvg.rachapp.R
 
 
 
+
 @Composable
 fun ForgotPasswordScreen(navController: NavHostController) {
     val emailValue = remember { mutableStateOf("") }
@@ -71,7 +72,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
             isLoading = false
             showSuccessMessage = true
             delay(2500)
-            navController.popBackStack()
+            //navController.popBackStack()
         }
     }
 
