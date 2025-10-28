@@ -3,11 +3,11 @@
     <string name="app_name">Destiny</string>
 
     <!-- Login Screen -->
-    <string name="login_title">Inicia sesion en tu cuenta</string>
+    <string name="login_title">Inicia sesión</string>
     <string name="email_label">Gmail</string>
     <string name="password_label">Contraseña</string>
-    <string name="forgot_password">¿Olvidaste contraseña?</string>
-    <string name="login_button">Inicio de sesión</string>
+    <string name="forgot_password">¿Olvidaste tú contraseña?</string>
+    <string name="login_button">Iniciar sesión</string>
     <string name="no_account">¿No tienes una cuenta?</string>
     <string name="sign_up">Registrarse</string>
     <string name="toggle_password">Icono de alternar contraseña</string>
@@ -104,6 +104,7 @@
     <string name="journal_detail_close">Cerrar</string>
 
     <string name="journal_date_format">dd/MM/yyyy HH:mm</string>
+
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
     <string name="home_streak_title">Racha</string>
@@ -119,9 +120,9 @@
     <string name="progress_title">Progreso</string>
     <string name="stats_title">Estadísticas</string>
     <string name="user_name">User Name</string>
-    <string name="days_feeding">120 días alimentando a Destiny</string>
-    <string name="articles_readed">12 artículos leídos</string>
-    <string name="notes_created">23 notas creadas</string>
+    <string name="days_feeding">días alimentando a Destiny</string>
+    <string name="articles_readed">artículos leídos</string>
+    <string name="notes_created">notas creadas</string>
     <string name="logout">Cerrar Sesión</string>
 
     <!-- Pantalla de Artículos -->
@@ -149,7 +150,7 @@
 
     <string name="cerrar">Cerrar</string>
 
-    <!-- Etiquetas para los botones de la barra de navegación inferior -->
+    <!-- Barra de navegación  -->
     <string name="bottom_nav_journal">Diario</string>
     <string name="bottom_nav_articles">Artículos</string>
     <string name="bottom_nav_home">Inicio</string>
