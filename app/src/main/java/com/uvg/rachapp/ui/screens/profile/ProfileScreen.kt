@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,13 +29,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uvg.rachapp.R
+import androidx.compose.ui.res.colorResource
+
 
 @Composable
 fun ProfileScreen(onLogout: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF9F9F9))
+            .background(colorResource(id = R.color.meteor))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -58,13 +61,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
             Column {
                 Text(
                     text = "User Name",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.galaxy)
                 )
                 Text(
                     text = "correo@gmail.com",
-                    fontSize = 16.sp,
-                    color = Color.Gray
+                    fontSize = 13.sp,
+                    color = colorResource(id = R.color.galaxy)
                 )
             }
         }
@@ -75,28 +79,48 @@ fun ProfileScreen(onLogout: () -> Unit) {
         // Progreso
         Text(
             text = "Progreso",
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
+            color = colorResource(id = R.color.galaxy)
         )
         Spacer(modifier = Modifier.height(12.dp))
+
+        // Valores de ejemplo
+        val currentStreak = 30
+        val longestStreak = 61
+        val progress = currentStreak.toFloat() / longestStreak.toFloat()
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            ProgressCard(title = "Racha actual", value = "30")
-            ProgressCard(title = "Racha más larga", value = "61")
+            ProgressCard(title = "Racha actual", value = currentStreak.toString())
+            ProgressCard(title = "Racha más larga", value = longestStreak.toString())
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Barra de progreso
+        LinearProgressIndicator(
+            progress = progress.run { coerceIn(0f, 1f) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            color = colorResource(id = R.color.universe),
+            trackColor = colorResource(id = R.color.blue_gray)
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Estadísticas
         Text(
             text = "Estadísticas",
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
+            color = colorResource(id = R.color.galaxy)
         )
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -116,9 +140,9 @@ fun ProgressCard(title: String, value: String) {
         modifier = Modifier
             .width(150.dp)
             .height(70.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        shape = RoundedCornerShape(12.dp)
+        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.blue_gray)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+        shape = RoundedCornerShape(8.dp)
     ) {
         Column(
             modifier = Modifier
@@ -127,8 +151,15 @@ fun ProgressCard(title: String, value: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-            Text(value, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF3A6DFF))
+            Text(title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.W400)
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(value, fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.universe))
         }
     }
 }
@@ -139,18 +170,22 @@ fun StatsRow(number: String, label: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom // base temporal
     ) {
         Text(
             text = number,
-            fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
-            color = Color(0xFF3A6DFF)
+            fontWeight = FontWeight.W500,
+            fontSize = 20.sp,
+            color = colorResource(id = R.color.universe),
+            modifier = Modifier.alignByBaseline()
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = label,
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W300,
+            modifier = Modifier.alignByBaseline()
         )
     }
 }
