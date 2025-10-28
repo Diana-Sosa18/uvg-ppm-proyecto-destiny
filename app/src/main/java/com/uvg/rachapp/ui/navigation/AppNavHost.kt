@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import com.uvg.rachapp.presentation.articulos.NewsScreen
 import com.uvg.rachapp.ui.screens.home.HomeScreen
 import com.uvg.rachapp.ui.screens.journal.JournalScreen
-import com.uvg.rachapp.ui.screens.authentication.components.ForgotPasswordScreen
 import com.uvg.rachapp.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -34,9 +33,6 @@ fun AppNavHost(
         }
         composable(Screen.Profile.route) {
             ProfileScreen(onLogout = onLogout)
-        }
-        composable("forgot_password") {
-            ForgotPasswordScreen(navController = navController)
         }
     }
     }

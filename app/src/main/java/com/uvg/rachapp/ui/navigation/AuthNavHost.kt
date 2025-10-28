@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.uvg.rachapp.ui.screens.authentication.LoginScreen
 import com.uvg.rachapp.ui.screens.authentication.components.FacebookRegisterScreen
+import com.uvg.rachapp.ui.screens.authentication.components.ForgotPasswordScreen
 import com.uvg.rachapp.ui.screens.authentication.components.GmailRegisterScreen
 import com.uvg.rachapp.ui.screens.authentication.components.RegisterScreen
 
@@ -32,6 +33,9 @@ fun AuthNavHost(
         }
         composable("gmail_register") {
             GmailRegisterScreen(navController = navController)
+        }
+        composable("forgot_password") {
+            ForgotPasswordScreen(navController = navController)
         }
     }
 }

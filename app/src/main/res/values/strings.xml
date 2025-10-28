@@ -78,4 +78,15 @@
     <string name="bottom_nav_articles">Artículos</string>
     <string name="bottom_nav_home">Inicio</string>
     <string name="bottom_nav_profile">Perfil</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="forgot_password_title">Recuperar Contraseña</string>
+    <string name="forgot_password_description">Ingresa tu email registrado y te enviaremos instrucciones para recuperar tu contraseña.</string>
+    <string name="forgot_password_email_label">Correo Electrónico</string>
+    <string name="forgot_password_button">Enviar Instrucciones</string>
+    <string name="forgot_password_sending">Enviando...</string>
+    <string name="forgot_password_success">✓ Email enviado exitosamente\nRevisa tu bandeja de entrada</string>
+    <string name="forgot_password_back_to_login">Volver al Inicio de Sesión</string>
+    <string name="error_email_required_forgot">El email es requerido</string>
+    <string name="error_email_invalid_forgot">Ingresa un email válido</string>
 </resources>

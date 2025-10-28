@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,6 +24,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
 import kotlinx.coroutines.delay
+import com.uvg.rachapp.R
+
+
 
 @Composable
 fun ForgotPasswordScreen(navController: NavHostController) {
@@ -32,18 +36,24 @@ fun ForgotPasswordScreen(navController: NavHostController) {
     var isLoading by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
+    val errorEmailRequired = stringResource(R.string.error_email_required_forgot)
+    val errorEmailInvalid = stringResource(R.string.error_email_invalid_forgot)
 
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
         return email.matches(emailRegex.toRegex())
     }
 
-    fun validateForm(): Boolean {
+
+    fun validateForm(
+        errorEmailRequired: String,
+        errorEmailInvalid: String
+    ): Boolean {
         return if (emailValue.value.isEmpty()) {
-            emailError = "El email es requerido"
+            emailError = errorEmailRequired
             false
         } else if (!isValidEmail(emailValue.value)) {
-            emailError = "Ingresa un email válido"
+            emailError = errorEmailInvalid
             false
         } else {
             emailError = ""
@@ -52,7 +62,6 @@ fun ForgotPasswordScreen(navController: NavHostController) {
     }
 
     fun sendRecoveryEmail() {
-        println("📧 Enviando email de recuperación a: ${emailValue.value}")
         isLoading = true
     }
 
@@ -69,7 +78,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(30.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -92,7 +101,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
             }
 
             Text(
-                text = "Recuperar Contraseña",
+                text = stringResource(R.string.forgot_password_title),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
@@ -103,7 +112,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Ingresa tu email registrado y te enviaremos instrucciones para recuperar tu contraseña.",
+            text = stringResource(R.string.forgot_password_description),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = Color.Gray,
                 fontSize = 14.sp
@@ -123,12 +132,12 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         ) {
             TransparentTextField(
                 textFieldValue = emailValue,
-                textLabel = "Correo Electrónico",
+                textLabel = stringResource(R.string.forgot_password_email_label),
                 keyboardType = KeyboardType.Email,
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                        if (validateForm()) {
+                        if (validateForm(errorEmailRequired, errorEmailInvalid)) {
                             sendRecoveryEmail()
                         }
                     }
@@ -159,7 +168,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    text = "✓ Email enviado exitosamente\nRevisa tu bandeja de entrada",
+                    text = stringResource(R.string.forgot_password_success),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color(0xFF2E7D32),
                         fontWeight = FontWeight.SemiBold
@@ -175,11 +184,11 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.weight(1f))
 
         RoundedButton(
-            text = if (isLoading) "Enviando..." else "Enviar Instrucciones",
+            text = if (isLoading) stringResource(R.string.forgot_password_sending) else stringResource(R.string.forgot_password_button),
             displayProgressBar = isLoading,
             onClick = {
                 focusManager.clearFocus()
-                if (validateForm()) {
+                if (validateForm(errorEmailRequired, errorEmailInvalid)) {
                     sendRecoveryEmail()
                 }
             }
@@ -188,7 +197,7 @@ fun ForgotPasswordScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Volver al Inicio de Sesión",
+            text = stringResource(R.string.forgot_password_back_to_login),
             style = MaterialTheme.typography.bodyMedium.copy(
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
