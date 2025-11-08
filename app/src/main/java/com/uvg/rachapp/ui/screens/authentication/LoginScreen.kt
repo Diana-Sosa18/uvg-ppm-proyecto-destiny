@@ -103,8 +103,15 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
     }
 
     LaunchedEffect(authState) {
-        if (authState is AuthState.Success) {
-            onLoginSuccess()
+        when (authState) {
+            is AuthState.Success -> {
+                onLoginSuccess()
+            }
+            is AuthState.SignedOut -> {
+                emailValue.value = ""
+                passwordValue.value = ""
+            }
+            else -> {}
         }
     }
 
@@ -152,7 +159,6 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                             )
                         )
 
-                        // Mostrar error de Firebase
                         if (authState is AuthState.Error) {
                             Text(
                                 text = (authState as AuthState.Error).message,

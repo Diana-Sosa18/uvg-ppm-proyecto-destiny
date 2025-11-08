@@ -13,6 +13,7 @@ import javax.inject.Inject
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
+    object SignedOut : AuthState()  // NUEVO ESTADO
     data class Success(val message: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
@@ -24,7 +25,6 @@ class AuthViewModel @Inject constructor(
 
     private val _isUserLoggedIn = MutableStateFlow(false)
     val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn.asStateFlow()
-
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -95,6 +95,18 @@ class AuthViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Error desconocido")
+            }
+        }
+    }
+
+    // FUNCIÓN PARA CERRAR SESIÓN
+    fun signOut() {
+        viewModelScope.launch {
+            try {
+                authRepository.signOut()
+                _authState.value = AuthState.SignedOut
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error al cerrar sesión: ${e.message}")
             }
         }
     }

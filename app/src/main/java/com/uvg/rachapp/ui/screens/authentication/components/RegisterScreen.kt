@@ -31,12 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.screens.authentication.RoundedButton
-import com.uvg.rachapp.ui.screens.authentication.components.TransparentTextField
 import com.uvg.rachapp.viewModels.AuthViewModel
 import com.uvg.rachapp.viewModels.AuthState
 import kotlinx.coroutines.delay
 
-// Colores locales
 private val FACEBOOK_COLOR = Color(0xFF1877F2)
 private val GMAIL_COLOR = Color(0xFFDB4437)
 
@@ -64,18 +62,17 @@ fun RegisterScreen(navController: NavHostController) {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.authState.collectAsState()
 
-    // Función para validar formato de email
+    var showSuccessDialog by remember { mutableStateOf(false) }
+
     fun isValidEmail(email: String): Boolean {
         val emailRegex = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
         return email.matches(emailRegex.toRegex())
     }
 
-    // Función para validar teléfono
     fun isValidPhone(phone: String): Boolean {
         return phone.length == 8 && phone.all { it.isDigit() }
     }
 
-    // Función de validación principal
     fun validateForm(): Boolean {
         var isValid = true
 
@@ -134,9 +131,24 @@ fun RegisterScreen(navController: NavHostController) {
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
+            showSuccessDialog = true
             delay(1500)
+            showSuccessDialog = false
             navController.popBackStack()
         }
+    }
+
+    if (showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = {},
+            title = {
+                Text(text = "Registro Exitoso")
+            },
+            text = {
+                Text(text = "Tu cuenta ha sido creada exitosamente.")
+            },
+            confirmButton = {}
+        )
     }
 
     Box(
