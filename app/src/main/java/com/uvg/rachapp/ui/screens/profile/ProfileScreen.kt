@@ -3,6 +3,8 @@ package com.uvg.rachapp.ui.screens.profile
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +19,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +57,7 @@ fun ProfileScreen(
     onLogout: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    var showSettingsDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -50,18 +65,37 @@ fun ProfileScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título superior
-        Text(
-            text = "Mi Perfil",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = colorResource(id = R.color.galaxy),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .align(Alignment.Start)
-        )
+        // Fila superior con título y botón de ajustes
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Título superior
+            Text(
+                text = "Mi Perfil",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.galaxy),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+            )
 
+            // Botón de ajustes
+            IconButton(
+                onClick = { showSettingsDialog = true },
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(colorResource(id = R.color.galaxy), CircleShape)
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    Icons.Filled.Settings,
+                    contentDescription = "Configuración",
+                    tint = Color.White
+                )
+            }
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -191,6 +225,96 @@ fun ProfileScreen(
                     fontWeight = FontWeight.SemiBold
                 )
             }
+        }
+        if (showSettingsDialog) {
+            AlertDialog(
+                onDismissRequest = { showSettingsDialog = false },
+                title = {
+                    Text(text = "Color de racha de calendario", fontWeight = FontWeight.Bold)
+                },
+                text = {
+                    Column() { // Primer grupo de colores (naranja)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp), // Espacio entre los colores
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.vivid_orange))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.light_orange))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp)) // Espacio entre los grupos
+
+                        // Segundo grupo de colores (turquesa)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.teal_200))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.teal_700))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp)) // Espacio entre los grupos
+
+                        // Tercer grupo de colores (morado)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.purple_200))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .background(color = colorResource(id = R.color.dark_magenta))
+                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .border(
+                                        1.dp,
+                                        Color.Gray,
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) // Borde redondeado
+                            )
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showSettingsDialog = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
         }
 
     }

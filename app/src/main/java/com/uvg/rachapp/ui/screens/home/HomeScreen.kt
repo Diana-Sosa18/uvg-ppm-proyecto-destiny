@@ -149,7 +149,7 @@ fun OrdinaryScreen(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> 
                     .height(90.dp)
                     //.scale(scale)
                     .clickable {
-                            CalendarViewModel.markTodayAsCompleted()
+                        CalendarViewModel.markTodayAsCompleted()
                         showTrashCanIcon = true
                         onAnimationStateChange(true)
 //                        scope.launch {
@@ -293,9 +293,8 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Use viewModel helper to get month title for the current 8-day block
         Text(
-                text = viewModel.getMonthTitleForCurrentBlock(),
+            text = viewModel.getMonthTitleForCurrentBlock(),
             color = Color.White,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
