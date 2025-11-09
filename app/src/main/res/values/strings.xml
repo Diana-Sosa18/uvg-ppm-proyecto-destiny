@@ -20,6 +20,9 @@
     <string name="sign_in">Iniciar Sesión</string>
     <string name="or">O</string>
     <string name="register_with">Registrarse con</string>
+    <string name="dialog_title_success">Registro Exitoso</string>
+    <string name="dialog_message_success">Tu cuenta ha sido creada exitosamente.</string>
+
 
     <!-- Campos del formulario -->
     <string name="name">Nombre</string>

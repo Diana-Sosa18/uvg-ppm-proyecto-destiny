@@ -142,10 +142,10 @@ fun RegisterScreen(navController: NavHostController) {
         AlertDialog(
             onDismissRequest = {},
             title = {
-                Text(text = "Registro Exitoso")
+                Text(text = stringResource(id = R.string.dialog_title_success))
             },
             text = {
-                Text(text = "Tu cuenta ha sido creada exitosamente.")
+                Text(text = stringResource(id = R.string.dialog_message_success))
             },
             confirmButton = {}
         )
