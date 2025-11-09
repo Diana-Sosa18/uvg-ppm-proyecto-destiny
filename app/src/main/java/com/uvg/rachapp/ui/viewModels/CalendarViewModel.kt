@@ -12,17 +12,16 @@ import javax.inject.Inject
 import androidx.compose.runtime.State
 import kotlinx.coroutines.flow.first
 import com.uvg.rachapp.data.local.db.entities.StreakDayEntity
-
-import java.time.temporal.ChronoUnit
 import java.time.format.TextStyle
 import java.util.Locale
+
 data class CalendarUiState(
     val currentBlockIndex: Int = 0,
     val selectedDate: LocalDate = LocalDate.now(),
     val streakDays: Set<LocalDate> = emptySet(),
     val currentStreak: Int = 0,
     val maxStreak: Int = 0,
-    // separate index for month-based blocks (used by expanded calendar)
+    // solo del expandiddo
     val currentMonthBlockIndex: Int = 0,
 )
 
@@ -62,6 +61,7 @@ class CalendarViewModel @Inject constructor(private val dao: MarkedDayDao) : Vie
     private fun calculateMaxStreak(markedDays: Set<LocalDate>): Int {
         if (markedDays.isEmpty()) return 0
         var max = 0
+        // For each date that is the start of a streak (previous day not marked), count length
         for (date in markedDays) {
             if (!markedDays.contains(date.minusDays(1))) {
                 var len = 1
@@ -110,6 +110,15 @@ class CalendarViewModel @Inject constructor(private val dao: MarkedDayDao) : Vie
         return "${month.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale("es")) else it.toString() }} de $year"
     }
 
+    // Title for the compact 8-day block view (derives month/year from the first day of the current block)
+    fun getMonthTitleForCurrentBlock(): String {
+        val blockDays = getCurrentBlockDays()
+        val first = blockDays.firstOrNull() ?: LocalDate.now()
+        val month = first.month.getDisplayName(TextStyle.FULL, Locale("es"))
+        val year = first.year
+        return "${month.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale("es")) else it.toString() }} de $year"
+    }
+
     fun goToNextMonthBlock() {
         _uiState.value = _uiState.value.copy(
             currentMonthBlockIndex = _uiState.value.currentMonthBlockIndex + 1
@@ -137,7 +146,6 @@ class CalendarViewModel @Inject constructor(private val dao: MarkedDayDao) : Vie
             currentBlockIndex = _uiState.value.currentBlockIndex - 1
         )
     }
-
 
     fun isFirstInStreak(date: LocalDate): Boolean {
         val marked = _uiState.value.streakDays

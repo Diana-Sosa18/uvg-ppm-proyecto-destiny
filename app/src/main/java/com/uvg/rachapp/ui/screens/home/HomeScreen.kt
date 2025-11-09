@@ -6,21 +6,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,36 +26,95 @@ import androidx.compose.ui.res.stringResource
 import java.time.format.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.viewModels.CalendarViewModel
-import com.uvg.rachapp.ui.screens.home.HomeScreenExpanded
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlin.compareTo
-import kotlin.toString
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.LottieConstants.IterateForever
+import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 
-// El contenido principal de la pantalla Home
+
+
 @Composable
-fun HomeScreen() {
+fun HomeScreen(){
+    var showAnimation by remember { mutableStateOf(false) }
+
+    //showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit
+    if(showAnimation) {
+        FeedingDestinyAnimation(showAnimation = showAnimation, onAnimationStateChange = { showAnimation = it })
+    }
+    else{
+        OrdinaryScreen(showAnimation = showAnimation, onAnimationStateChange = { showAnimation = it })
+    }
+}
+//Animación
+@Composable
+fun FeedingDestinyAnimation(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit) {
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        val composition by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(R.raw.artboard)
+        )
+        val duration = composition?.duration
+        val delay = duration?.plus(1000)
+        LaunchedEffect(key1 = composition) {
+            delay(10000)
+            onAnimationStateChange(false)
+        }
+
+        LottieAnimation(
+            composition = composition,
+            modifier = Modifier.size(500.dp),
+//                .clickable {
+//                    isPlaying = true
+//                },
+            iterations = LottieConstants.IterateForever
+//            progress = {
+//                progress
+//            }
+        )
+    }
+}
+
+
+@Composable
+fun OrdinaryScreen(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit) {
     // state to toggle between compact and expanded views
     var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    var scale by remember { mutableStateOf(1f) }
+    //val scope = rememberCoroutineScope()
+    //var scale by remember { mutableStateOf(1f) }
     val CalendarViewModel: CalendarViewModel = hiltViewModel()
+    var showTrashCanIcon by remember { mutableStateOf(false) }
+
+    // Aseguramos que el estado showTrashCanIcon se actualice si la racha es > 0 al inicial la app :)
+    LaunchedEffect(CalendarViewModel.uiState.value.currentStreak) {
+        if (CalendarViewModel.uiState.value.currentStreak > 0) {
+            showTrashCanIcon = true
+        } else {
+            showTrashCanIcon = false
+        }
+    }
 
     // If expanded, show the expanded screen and provide a collapse callback
     if (expanded) {
-        HomeScreenExpanded(viewModel = CalendarViewModel, onCollapse = { expanded = false })
+        HomeCalendarScreenExpanded(viewModel = CalendarViewModel, onCollapse = { expanded = false })
         return
     }
 
@@ -78,15 +131,13 @@ fun HomeScreen() {
             fontWeight = FontWeight.Bold,
             color = Color(0xFF002366)
         )
-
-
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        Calendar(viewModel = CalendarViewModel, onToggleExpand = { expanded = true })
+        Calendar(viewModel = CalendarViewModel, onToggleExpand = { expanded = true }, showTrashCanIcon = showTrashCanIcon, onTrashCanStateChange = { showTrashCanIcon = it })
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Botón + texto
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -95,16 +146,20 @@ fun HomeScreen() {
                 painter = painterResource(id = R.drawable.buttoncroqueta),
                 contentDescription = stringResource(id = R.string.home_button_desc),
                 modifier = Modifier
-                    .scale(scale)
+                    .height(90.dp)
+                    //.scale(scale)
                     .clickable {
-                        scope.launch {
-                            // animación simple al tocar, después agrego la real
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
-
                             CalendarViewModel.markTodayAsCompleted()
-                        }
+                        showTrashCanIcon = true
+                        onAnimationStateChange(true)
+//                        scope.launch {
+//                            // animación simple al tocar
+//                            scale = 1.2f
+//                            delay(200)
+//                            scale = 1f
+//                            // Añadir día de hoy a la base de datos
+//                            //CalendarViewModel.markTodayAsCompleted()
+//                        }
                     }
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -129,22 +184,16 @@ fun HomeScreen() {
                 .fillMaxHeight(0.33f),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.perrito),
-                contentDescription = stringResource(id = R.string.home_dog_desc),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        scope.launch {
-                            // animación simple al tocar, después agrego la real
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
+            //Spacer(modifier = Modifier.height(12.dp))
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.sleep2)
+            )
 
-                            CalendarViewModel.removeTodayFromStreak()
-                        }
-                    }
+            // Reproducir siempre
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier.fillMaxSize(),
+                iterations = LottieConstants.IterateForever
             )
         }
     }
@@ -152,9 +201,12 @@ fun HomeScreen() {
 
 
 @Composable
-fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}) {
+fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, showTrashCanIcon: Boolean, onTrashCanStateChange: (Boolean) -> Unit ) {
     val uiState by viewModel.uiState
     val currentBlockDays = viewModel.getCurrentBlockDays()
+
+    //if (uiState.currentStreak > 0) onTrashCanStateChange(true)
+    //var showTrashCanIcon by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .padding(16.dp)
@@ -164,27 +216,22 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = if (uiState.currentStreak > 0) {
-                    "¡Llevas ${uiState.currentStreak} días! ^_^"
-                } else {
-                    "Empieza una nueva racha"
-                },
-                color = Color.White,
-                modifier = Modifier
-                    .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = {
+                    // preserve the selected index within the current 8-day block
+                    val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
                     viewModel.goToPreviousBlock()
+                    // get the new block days and select the same index (fallback to first)
+                    val newBlockDays = viewModel.getCurrentBlockDays()
+                    val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
+                    viewModel.selectDate(newBlockDays[selectIndex])
                     // scroll to corresponding item in LazyRow
                     /*
                     scope.launch {
@@ -198,32 +245,38 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}) {
                         contentDescription = "Anterior",
                         tint = Color.Gray
                     )
-                }
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    modifier = Modifier
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(4),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
                         .weight(0.33f)
-                        .padding(horizontal = 8.dp, vertical = 16.dp)
-                ) {
-                    currentBlockDays.forEach { date ->
-                        item {
-                            CalendarDay(
-                                day = date.dayOfMonth.toString(),
-                                isHighlighted = uiState.streakDays.contains(date),
-                                isToday = date == LocalDate.now(),
-                                isSelected = date == uiState.selectedDate,
-                                onClick = { viewModel.selectDate(date) }
-                            )
-                        }
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
+            ) {
+                currentBlockDays.forEach { date ->
+                    item {
+                        CalendarDay(
+                            day = date.dayOfMonth.toString(),
+                            isHighlighted = uiState.streakDays.contains(date),
+                            isToday = date == LocalDate.now(),
+                            isSelected = date == uiState.selectedDate,
+                            onClick = { viewModel.selectDate(date) }
+                        )
                     }
-
                 }
+
+            }
 
                 IconButton(onClick = {
+                    // preserve the selected index within the current 8-day block
+                    val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
                     viewModel.goToNextBlock()
+                    // get the new block days and select the same index (fallback to first)
+                    val newBlockDays = viewModel.getCurrentBlockDays()
+                    val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
+                    viewModel.selectDate(newBlockDays[selectIndex])
                     /*scope.launch {
                         listState.animateScrollToItem(center + viewModel.uiState.value.currentBlockIndex)
 
@@ -235,40 +288,31 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}) {
                         contentDescription = "Siguiente",
                         tint = Color.Gray
                     )
-                }
             }
-
-            if (uiState.selectedDate != LocalDate.now()) {
-                Button(
-                    onClick = { viewModel.selectDate(LocalDate.now()) },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(8.dp)
-                )
-                {
-                    Text("Volver al futuro XD")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = viewModel.getMonthTitleForBlock(),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
-                    .padding(vertical = 12.dp)
-                    .fillMaxWidth()
-            )
         }
 
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Use viewModel helper to get month title for the current 8-day block
+        Text(
+                text = viewModel.getMonthTitleForCurrentBlock(),
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
+                .padding(vertical = 12.dp)
+                .fillMaxWidth()
+        )
+        }
+
+        // Botón de agrandar
         IconButton(
             onClick = { onToggleExpand() },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .height(24.dp)
+                .padding(start = 4.dp)
                 .background(Color(0xFFA727B0), CircleShape)
         ) {
             Icon(
@@ -278,6 +322,57 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}) {
                 tint = Color.White
             )
         }
+
+        if (uiState.selectedDate == LocalDate.now() && showTrashCanIcon) {
+            IconButton(
+                onClick = {
+                    viewModel.removeTodayFromStreak()
+                    onTrashCanStateChange(false) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .height(24.dp)
+                    .padding(start = 5.dp)
+                    .background(Color(0xFFFA0606), CircleShape)
+            )
+            {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Borrar día",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.White
+                )
+            }
+        }
+        else{
+            if(uiState.selectedDate != LocalDate.now()) {
+                IconButton(
+                    onClick = { viewModel.selectDate(LocalDate.now()) },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .height(24.dp)
+                        .padding(start = 5.dp, )
+                        .background(Color(0xFFFFC107), CircleShape)
+                )
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = "Regresar a hoy",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+        Text(
+            text = if (uiState.currentStreak > 0) "¡Llevas ${uiState.currentStreak} días" else "Empieza una nueva racha",
+            color = Color.White,
+            modifier = Modifier
+                .align(alignment = Alignment.TopCenter)
+                .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
+                .padding(top = 3.dp)
+                //.padding(horizontal = 16.dp, vertical = 5.dp)
+        )
+
     }
 }
 
@@ -346,3 +441,5 @@ fun CalendarDay(
         }
     }
 }
+
+
