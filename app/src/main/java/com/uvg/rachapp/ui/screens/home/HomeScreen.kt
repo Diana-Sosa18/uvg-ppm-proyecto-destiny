@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.viewModels.CalendarViewModel
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -201,12 +203,37 @@ fun OrdinaryScreen(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> 
 
 
 @Composable
-fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, showTrashCanIcon: Boolean, onTrashCanStateChange: (Boolean) -> Unit ) {
+fun Calendar(
+    viewModel: CalendarViewModel,
+    onToggleExpand: () -> Unit = {},
+    showTrashCanIcon: Boolean,
+    onTrashCanStateChange: (Boolean) -> Unit
+) {
     val uiState by viewModel.uiState
     val currentBlockDays = viewModel.getCurrentBlockDays()
 
-    //if (uiState.currentStreak > 0) onTrashCanStateChange(true)
-    //var showTrashCanIcon by remember { mutableStateOf(false) }
+    // read selection from ColorViewModel and map to compact/expanded colors
+    val colorViewModel: ColorViewModel = hiltViewModel()
+    val selection by colorViewModel.selection.collectAsState()
+    val (compactColor, expandedColor) = when (selection) {
+        1 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFFFF6F3C), // compact orange (original)
+            androidx.compose.ui.graphics.Color(0xFFFFA726)  // expanded orange
+        )
+        2 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFF00796B), // compact -> dark teal (inverted)
+            androidx.compose.ui.graphics.Color(0xFF26C6DA)  // expanded -> light teal (inverted)
+        )
+        3 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFF9C27B0), // compact -> dark magenta (inverted)
+            androidx.compose.ui.graphics.Color(0xFFCE93D8)  // expanded -> light purple (inverted)
+        )
+        else -> Pair(
+            androidx.compose.ui.graphics.Color(0xFFFF6F3C),
+            androidx.compose.ui.graphics.Color(0xFFFFA726)
+        )
+    }
+
     Box(
         modifier = Modifier
             .padding(16.dp)
@@ -219,90 +246,74 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
 
             Spacer(modifier = Modifier.height(22.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(onClick = {
-                    // preserve the selected index within the current 8-day block
                     val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
                     viewModel.goToPreviousBlock()
-                    // get the new block days and select the same index (fallback to first)
                     val newBlockDays = viewModel.getCurrentBlockDays()
                     val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
                     viewModel.selectDate(newBlockDays[selectIndex])
-                    // scroll to corresponding item in LazyRow
-                    /*
-                    scope.launch {
-                        listState.animateScrollToItem(center + viewModel.uiState.value.currentBlockIndex)
-                    }
-
-                     */
                 }) {
                     Icon(
                         Icons.Default.KeyboardArrowLeft,
                         contentDescription = "Anterior",
                         tint = Color.Gray
                     )
-            }
+                }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier
                         .weight(0.33f)
-                    .padding(horizontal = 8.dp, vertical = 16.dp)
-            ) {
-                currentBlockDays.forEach { date ->
-                    item {
-                        CalendarDay(
-                            day = date.dayOfMonth.toString(),
-                            isHighlighted = uiState.streakDays.contains(date),
-                            isToday = date == LocalDate.now(),
-                            isSelected = date == uiState.selectedDate,
-                            onClick = { viewModel.selectDate(date) }
-                        )
+                        .padding(horizontal = 8.dp, vertical = 16.dp)
+                ) {
+                    currentBlockDays.forEach { date ->
+                        item {
+                            CalendarDay(
+                                day = date.dayOfMonth.toString(),
+                                isHighlighted = uiState.streakDays.contains(date),
+                                isToday = date == LocalDate.now(),
+                                isSelected = date == uiState.selectedDate,
+                                onClick = { viewModel.selectDate(date) },
+                                highlightColor = compactColor
+                            )
+                        }
                     }
                 }
 
-            }
-
                 IconButton(onClick = {
-                    // preserve the selected index within the current 8-day block
                     val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
                     viewModel.goToNextBlock()
-                    // get the new block days and select the same index (fallback to first)
                     val newBlockDays = viewModel.getCurrentBlockDays()
                     val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
                     viewModel.selectDate(newBlockDays[selectIndex])
-                    /*scope.launch {
-                        listState.animateScrollToItem(center + viewModel.uiState.value.currentBlockIndex)
-
-                    }
-                     */
                 }) {
                     Icon(
                         Icons.Default.KeyboardArrowRight,
                         contentDescription = "Siguiente",
                         tint = Color.Gray
                     )
+                }
             }
-        }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = viewModel.getMonthTitleForCurrentBlock(),
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
-                .padding(vertical = 12.dp)
-                .fillMaxWidth()
-        )
+            Text(
+                text = viewModel.getMonthTitleForCurrentBlock(),
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth()
+            )
         }
 
         // Botón de agrandar
@@ -326,14 +337,14 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
             IconButton(
                 onClick = {
                     viewModel.removeTodayFromStreak()
-                    onTrashCanStateChange(false) },
+                    onTrashCanStateChange(false)
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .height(24.dp)
                     .padding(start = 5.dp)
                     .background(Color(0xFFFA0606), CircleShape)
-            )
-            {
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Borrar día",
@@ -341,18 +352,16 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
                     tint = Color.White
                 )
             }
-        }
-        else{
-            if(uiState.selectedDate != LocalDate.now()) {
+        } else {
+            if (uiState.selectedDate != LocalDate.now()) {
                 IconButton(
                     onClick = { viewModel.selectDate(LocalDate.now()) },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .height(24.dp)
-                        .padding(start = 5.dp, )
+                        .padding(start = 5.dp)
                         .background(Color(0xFFFFC107), CircleShape)
-                )
-                {
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Refresh,
                         contentDescription = "Regresar a hoy",
@@ -362,6 +371,7 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
                 }
             }
         }
+
         Text(
             text = if (uiState.currentStreak > 0) "¡Llevas ${uiState.currentStreak} días" else "Empieza una nueva racha",
             color = Color.White,
@@ -369,9 +379,7 @@ fun Calendar(viewModel: CalendarViewModel, onToggleExpand: () -> Unit = {}, show
                 .align(alignment = Alignment.TopCenter)
                 .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
                 .padding(top = 3.dp)
-                //.padding(horizontal = 16.dp, vertical = 5.dp)
         )
-
     }
 }
 
@@ -381,7 +389,8 @@ fun CalendarDay(
     isHighlighted: Boolean,
     isToday: Boolean,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    highlightColor: androidx.compose.ui.graphics.Color = Color(0xFFFF6F3C)
 ){
     Box(
         modifier = Modifier
@@ -394,7 +403,7 @@ fun CalendarDay(
                 .size(48.dp)
                 .clip(CircleShape)
                 .background(
-                    color = if (isHighlighted) Color(0xFFFF6F3C) else Color.White,
+                    color = if (isHighlighted) highlightColor else Color.White,
                     shape = CircleShape
                 )
                 .border(

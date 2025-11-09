@@ -37,6 +37,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import androidx.compose.runtime.collectAsState
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import androidx.compose.runtime.getValue as composeGetValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +63,8 @@ fun ProfileScreen(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     var showSettingsDialog by remember { mutableStateOf(false) }
+    val colorViewModel: ColorViewModel = hiltViewModel()
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -234,77 +241,101 @@ fun ProfileScreen(
                 },
                 text = {
                     Column() { // Primer grupo de colores (naranja)
+                        // Row 1: naranja pair
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(2.dp), // Espacio entre los colores
+                            horizontalArrangement = Arrangement.spacedBy(2.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    // scheme 1 = naranja
+                                    colorViewModel.setSelection(1)
+                                    Toast.makeText(context, "Color de racha actualizado", Toast.LENGTH_SHORT).show()
+                                    showSettingsDialog = false
+                                }
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.vivid_orange))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.light_orange))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                             )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp)) // Espacio entre los grupos
 
                         // Segundo grupo de colores (turquesa)
+                        // Row 2: turquesa pair
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    // scheme 2 = turquesa
+                                    colorViewModel.setSelection(2)
+                                    Toast.makeText(context, "Color de racha actualizado", Toast.LENGTH_SHORT).show()
+                                    showSettingsDialog = false
+                                }
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.teal_200))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.teal_700))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                             )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp)) // Espacio entre los grupos
 
                         // Tercer grupo de colores (morado)
+                        // Row 3: purple pair
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth().clickable {/*Elegir color*/ }
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    // scheme 3 = morado
+                                    colorViewModel.setSelection(3)
+                                    Toast.makeText(context, "Color de racha actualizado", Toast.LENGTH_SHORT).show()
+                                    showSettingsDialog = false
+                                }
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.purple_200))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                             )
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(50.dp)  // Ajusta la altura si es necesario
+                                    .height(50.dp)
                                     .background(color = colorResource(id = R.color.dark_magenta))
-                                    .clip(RoundedCornerShape(8.dp)) // Bordes redondeados
+                                    .clip(RoundedCornerShape(8.dp))
                                     .border(
                                         1.dp,
                                         Color.Gray,
                                         shape = RoundedCornerShape(8.dp)
-                                    ) // Borde redondeado
+                                    )
                             )
                         }
                     }

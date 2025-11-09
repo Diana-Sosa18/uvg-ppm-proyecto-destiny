@@ -59,6 +59,9 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.viewModels.CalendarViewModel
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.collectAsState
 import kotlin.collections.get
 import kotlin.toString
 
@@ -108,6 +111,14 @@ fun ExpandedCalendar (
     viewModel: CalendarViewModel,
     onCollapse: () -> Unit = {}
 ) {
+    val colorViewModel: ColorViewModel = hiltViewModel()
+    val selection by colorViewModel.selection.collectAsState()
+        val expandedColor = when (selection) {
+            1 -> androidx.compose.ui.graphics.Color(0xFFFFA726) // orange expanded
+            2 -> androidx.compose.ui.graphics.Color(0xFF26C6DA) // light teal (inverted)
+            3 -> androidx.compose.ui.graphics.Color(0xFFCE93D8) // light purple (inverted)
+            else -> androidx.compose.ui.graphics.Color(0xFFFFA726)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -217,8 +228,8 @@ fun ExpandedCalendar (
                                     .padding(0.dp)
                                     // only clip when we want rounded corners or circle; middle cells remain rectangular
                                     .clip(shape)
-                                    .background(if (isInStreak) Color(0xFFFFA726) else Color.Transparent)
-                                    .border(if (isInStreak) 1.dp else 0.dp, if (isInStreak) Color(0xFFFFA726) else Color.Transparent, shape),
+                                    .background(if (isInStreak) expandedColor else Color.Transparent)
+                                    .border(if (isInStreak) 1.dp else 0.dp, if (isInStreak) expandedColor else Color.Transparent, shape),
 
                                 contentAlignment = Alignment.Center
                             ) {
