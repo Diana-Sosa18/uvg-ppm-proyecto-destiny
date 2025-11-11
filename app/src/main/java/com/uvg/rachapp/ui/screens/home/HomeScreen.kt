@@ -72,7 +72,7 @@ fun FeedingDestinyAnimation(showAnimation: Boolean, onAnimationStateChange: (Boo
         contentAlignment = Alignment.Center
     ) {
         val composition by rememberLottieComposition(
-            spec = LottieCompositionSpec.RawRes(R.raw.artboard)
+            spec = LottieCompositionSpec.RawRes(R.raw.feeding)
         )
         val duration = composition?.duration
         val delay = duration?.plus(1000)
