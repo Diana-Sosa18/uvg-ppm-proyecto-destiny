@@ -38,13 +38,18 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,6 +65,10 @@ import com.uvg.rachapp.data.repository.NotePreview
 @Composable
 fun JournalScreen( journalViewModel: JournalViewModel = hiltViewModel()
 ) {
+
+    LaunchedEffect(Unit) {
+        journalViewModel.checkOrCreatePinOnFirstOpen()
+    }
 
     val notes by journalViewModel.notesState.collectAsState()
     val titleInput = journalViewModel.titleInput
@@ -173,6 +182,95 @@ fun JournalScreen( journalViewModel: JournalViewModel = hiltViewModel()
         )
     }
 
+    if (journalViewModel.showCreatePinDialog) {
+        var pin by remember { mutableStateOf("") }
+        var confirm by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(text = stringResource(R.string.create_pin_title)) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = pin,
+                        onValueChange = { pin = it },
+                        label = { Text(stringResource(R.string.create_pin_label_pin)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = confirm,
+                        onValueChange = { confirm = it },
+                        label = { Text(stringResource(R.string.create_pin_label_confirm)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                    if (journalViewModel.pinErrorMessage != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = journalViewModel.pinErrorMessage!!, color = Color.Red)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (pin.isBlank()) {
+                        // no action here, VM will handle validation if needed
+                    } else if (pin != confirm) {
+                        // no action here, VM will handle validation if needed
+                    } else {
+                        journalViewModel.saveNewPin(pin)
+                    }
+                }) {
+                    Text(text = stringResource(R.string.create_pin_save))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    journalViewModel.dismissCreatePinDialog()  })
+                {
+                    Text(text = stringResource(R.string.create_pin_cancel))
+                }
+            }
+        )
+    }
+
+
+    if (journalViewModel.showEnterPinDialog) {
+        var entered by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { journalViewModel.dismissEnterPinDialog()  },
+            title = { Text(text = stringResource(R.string.enter_pin_title)) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = entered,
+                        onValueChange = { entered = it },
+                        label = { Text(stringResource(R.string.enter_pin_label)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                    if (journalViewModel.pinErrorMessage != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = journalViewModel.pinErrorMessage!!, color = Color.Red)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    journalViewModel.enterPinAndShow(entered)
+                }) {
+                    Text(text = stringResource(R.string.enter_pin_accept))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { journalViewModel.dismissEnterPinDialog() }) {
+                    Text(text = stringResource(R.string.enter_pin_cancel))
+                }
+            }
+        )
+    }
 
     if (journalViewModel.showNoteDetailDialog && journalViewModel.selectedNote != null) {
         NoteDetailDialog(

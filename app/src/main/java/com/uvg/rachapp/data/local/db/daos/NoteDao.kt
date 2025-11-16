@@ -21,4 +21,10 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
     fun getNoteById(id: Int): Flow<NoteEntity?>
+
+      @Query("SELECT * FROM notes WHERE timestamp = :timestamp LIMIT 1")
+    suspend fun getNoteByTimestamp(timestamp: Long): NoteEntity?
+
+    @Query("DELETE FROM notes")
+    suspend fun deleteAllNotes()
 }

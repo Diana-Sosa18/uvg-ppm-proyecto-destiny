@@ -3,12 +3,14 @@ package com.uvg.rachapp.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.uvg.rachapp.data.repository.NoteRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore
+    private val db: FirebaseFirestore,
+    private val noteRepository: NoteRepository
 ) {
     suspend fun loginUser(email: String, password: String): Result<FirebaseUser?> {
         return try {
@@ -61,4 +63,12 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUser() = auth.currentUser
     fun signOut() = auth.signOut()
+
+    suspend fun signOutAndClear() {
+        auth.signOut()
+        try {
+            noteRepository.clearAllNotes()
+        } catch (_: Exception) {
+        }
+    }
 }

@@ -51,4 +51,5 @@ object JournalDatabaseModule {
     fun provideNoteDao(database: JournalDatabase): NoteDao {
         return database.noteDao()
     }
+
 }

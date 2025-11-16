@@ -33,4 +33,18 @@ class NoteRepository @Inject constructor(
     }
 
     fun getNoteById(id: Int) = noteDao.getNoteById(id).map { it?.toPreview() }
+
+    suspend fun existsByTimestamp(timestamp: Long): Boolean {
+        return noteDao.getNoteByTimestamp(timestamp) != null
+    }
+
+
+    suspend fun insertNoteFromCloud(title: String, content: String, timestamp: Long) {
+        val preview = NotePreview(id = 0, title = title, content = content, timestamp = timestamp)
+        insertNote(preview)
+    }
+
+    suspend fun clearAllNotes() {
+        noteDao.deleteAllNotes()
+    }
 }
