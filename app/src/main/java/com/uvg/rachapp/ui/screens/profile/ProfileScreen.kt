@@ -169,6 +169,7 @@ fun ProfileScreen(
 
         Button(
             onClick = {
+                authViewModel.logout()  // Cierra sesión en Firebase
                 onLogout()
             },
             modifier = Modifier

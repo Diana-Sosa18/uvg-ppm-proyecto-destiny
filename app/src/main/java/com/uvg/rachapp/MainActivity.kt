@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,45 +23,46 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
-//import androidx.media3.common.util.Log
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        Log.d("MainActivity", "onDestroy llamado - la app se está cerrando")
-//    }
 
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
+        auth.signOut()
+
         setContent {
             RachAppTheme {
-                var isLoggedIn by remember { mutableStateOf(false) } // Estado de autenticación
-                val navController = rememberNavController()
+                var isLoggedIn by remember { mutableStateOf(auth.currentUser != null) }
+
+                // Mantiene sincronizado el estado con FirebaseAuth
+                LaunchedEffect(Unit) {
+                    auth.addAuthStateListener { firebaseAuth ->
+                        isLoggedIn = firebaseAuth.currentUser != null
+                    }
+                }
+
+                val authNavController = rememberNavController()
 
                 if (isLoggedIn) {
-                    AppNavigation (
+                    AppNavigation(
                         modifier = Modifier.fillMaxSize(),
-                        onLogout = { isLoggedIn = false }
+                        onLogout = {
+                            auth.signOut()
+                        }
                     )
                 } else {
                     AuthNavHost(
-                        navController = navController,
+                        navController = authNavController,
                         modifier = Modifier.fillMaxSize(),
-                        onLoginSuccess = { isLoggedIn = true })
+                        onLoginSuccess = {
+                            // No se cambia isLoggedIn, ya que FirebaseAuthListener lo hará
+                        }
+                    )
                 }
             }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if(currentUser!=null){
-            //navegar a la home de la app
         }
     }
 }

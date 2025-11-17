@@ -61,4 +61,5 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUser() = auth.currentUser
     fun signOut() = auth.signOut()
+
 }
