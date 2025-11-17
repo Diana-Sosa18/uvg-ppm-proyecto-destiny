@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,11 +60,11 @@ class JournalViewModel @Inject constructor(
 
     var cachedPinHash: String? = null
 
-    // contador exposable
+
     var noteCount by mutableStateOf(0L)
         private set
 
-    // ---- UI handlers existentes ----
+
     fun onTitleChange(new: String) { titleInput = new }
     fun onContentChange(new: String) { contentInput = new }
 
@@ -74,13 +75,12 @@ class JournalViewModel @Inject constructor(
         showAddNoteForm = false
     }
 
-    // ---- Integración: añadir nota con sincronización cloud ----
-    // Conserva el mismo nombre que usa tu UI: addNoteFromInputs()
+
     fun addNoteFromInputs() {
         val title = titleInput.trim()
         val content = contentInput.trim()
         if (title.isBlank() && content.isBlank()) {
-            // no crear nota vacía
+
             titleInput = ""
             contentInput = ""
             showAddNoteForm = false
@@ -90,10 +90,10 @@ class JournalViewModel @Inject constructor(
         val preview = NotePreview(id = 0, title = title, content = content, timestamp = ts)
 
         viewModelScope.launch {
-            // 1) insertar localmente (Room)
+
             repository.insertNote(preview)
 
-            // 2) intentar crear en cloud (si falla, dejamos la nota local)
+
             val user = auth.currentUser
             if (user != null) {
                 try {
@@ -102,25 +102,25 @@ class JournalViewModel @Inject constructor(
                         "content" to content,
                         "timestamp" to ts
                     ))
-                    // firestoreRepository.createCloudNote ya incrementa noteCount internamente
+
                     noteCount += 1
                 } catch (e: Exception) {
-                    // opcional: marcar para reintento. Por ahora no bloqueamos la UX
+
                 }
             }
         }
 
-        // limpiar UI
+
         titleInput = ""
         contentInput = ""
         showAddNoteForm = false
     }
 
-    // ---- selección / mostrar nota ----
-    // cuando el usuario toca la nota: abrimos diálogo para pedir PIN primero
+
+
     fun selectNoteForConfirm(note: NotePreview) {
         selectedNote = note
-        // en lugar de abrir confirm directo, abrimos confirm que pedirá PIN
+
         showConfirmDialog = true
     }
 
@@ -129,17 +129,17 @@ class JournalViewModel @Inject constructor(
         selectedNote = null
     }
 
-    // cuando confirman ver (en tu ConfirmViewDialog), ahora mostramos diálogo para ingresar PIN
+
     fun confirmViewSelectedNote() {
         showConfirmDialog = false
-        // abrir el diálogo de ingreso de PIN
+
         showEnterPinDialog = true
     }
 
-    // llamada desde el diálogo de ingreso de PIN en la UI
+
     fun enterPinAndShow(enteredPin: String) {
         if (verifyPin(enteredPin)) {
-            // PIN correcto: mostrar detalle
+
             showEnterPinDialog = false
             showNoteDetailDialog = true
             pinErrorMessage = null
@@ -153,31 +153,50 @@ class JournalViewModel @Inject constructor(
         selectedNote = null
     }
 
-    // ---- borrar nota con sincronización ----
-    // conservamos la firma usada en la UI: deleteNote(note)
+
     fun deleteNote(note: NotePreview) {
         val user = auth.currentUser
         viewModelScope.launch {
-            // 1) borrar local
-            repository.deleteNoteById(note.id)
 
-            // 2) intentar borrar en cloud por timestamp (no cambiamos schema)
+            try {
+                repository.deleteNoteById(note.id)
+                android.util.Log.d("SYNC", "Deleted local note id=${note.id} ts=${note.timestamp}")
+            } catch (e: Exception) {
+                android.util.Log.e("SYNC", "Error deleting local note id=${note.id}", e)
+            }
+
+
             if (user != null) {
                 try {
+                    android.util.Log.d("SYNC", "Attempting cloud delete for uid=${user.uid} ts=${note.timestamp}")
+                    android.util.Log.d("SYNC", "Before cloud delete: auth.currentUser?.uid=${auth.currentUser?.uid}, expected uid=${user?.uid}, note.ts=${note.timestamp}")
                     firestoreRepository.deleteCloudNoteByTimestamp(user.uid, note.timestamp)
-                    // deleteCloudNoteByTimestamp decrementa contador internamente, si implementaste así
+
                     noteCount = (noteCount - 1).coerceAtLeast(0)
+                    android.util.Log.d("SYNC", "Cloud delete attempted for ts=${note.timestamp} uid=${user.uid}")
                 } catch (e: Exception) {
-                    // manejar fallo: reintentar más tarde
+                    android.util.Log.e("SYNC", "Error deleting cloud note for ts=${note.timestamp} uid=${user.uid}", e)
+
                 }
+
+
+                try {
+                    val snaps = firestoreRepository.userNotesCollection(user.uid).get().await()
+                    android.util.Log.d("SYNC", "Post-delete cloud snapshot size = ${snaps.size()} for uid=${user.uid}")
+                } catch (e: Exception) {
+                    android.util.Log.e("SYNC", "Error fetching cloud notes after delete for uid=${user.uid}", e)
+                }
+            } else {
+                android.util.Log.w("SYNC", "No user logged in; skipped cloud delete for ts=${note.timestamp}")
             }
         }
+
+
         showNoteDetailDialog = false
         selectedNote = null
     }
 
-    // ---- PIN management ----
-    // Llamar desde JournalScreen (LaunchedEffect) al abrir la pantalla
+
     fun checkOrCreatePinOnFirstOpen() {
         val user = auth.currentUser ?: return
         viewModelScope.launch {
@@ -189,10 +208,10 @@ class JournalViewModel @Inject constructor(
                     cachedPinHash = pinHash
                 }
 
-                // también obtener contador inicial
+
                 noteCount = firestoreRepository.getNoteCount(user.uid)
 
-                // sincronizar notas cloud -> local (dedupe por timestamp)
+
                 val cloudNotes = firestoreRepository.getAllCloudNotes(user.uid)
                 for (m in cloudNotes) {
                     val ts = (m["timestamp"] as? Number)?.toLong() ?: continue
@@ -204,7 +223,7 @@ class JournalViewModel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                // manejar/log (no bloquear UI)
+
             }
         }
     }

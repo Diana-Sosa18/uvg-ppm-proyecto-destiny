@@ -215,9 +215,9 @@ fun JournalScreen( journalViewModel: JournalViewModel = hiltViewModel()
             confirmButton = {
                 TextButton(onClick = {
                     if (pin.isBlank()) {
-                        // no action here, VM will handle validation if needed
+
                     } else if (pin != confirm) {
-                        // no action here, VM will handle validation if needed
+
                     } else {
                         journalViewModel.saveNewPin(pin)
                     }
