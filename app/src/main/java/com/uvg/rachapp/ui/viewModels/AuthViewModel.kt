@@ -114,4 +114,13 @@ class AuthViewModel @Inject constructor(
     fun resetState() {
         _authState.value = AuthState.Idle
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.signOut()
+            _isUserLoggedIn.value = false
+            _authState.value = AuthState.Success("Sesión cerrada")
+        }
+    }
+
 }
