@@ -32,7 +32,9 @@ fun AppNavHost(
             HomeScreen()
         }
         composable(Screen.Profile.route) {
-            ProfileScreen(onLogout = onLogout)
+            ProfileScreen(
+                onLogout = { onLogout() }
+            )
         }
     }
     }
