@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,11 +73,13 @@ fun ProfileScreen(
     val context = LocalContext.current
     val showLogoutDialog by profileViewModel.showLogoutDialog.collectAsState()
     val authViewModel: AuthViewModel = hiltViewModel()
+    var showInfo by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.meteor))
+            .background(Color(0xFFF5F5F5))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -167,12 +170,24 @@ fun ProfileScreen(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ProgressCard(title = "Racha actual", value = currentStreak.toString())
+            ProgressCard(
+                title = "Racha actual",
+                value = currentStreak.toString(),
+                showInfoButton = true,
+                onInfoClick = { showInfo = true }
+            )
+
             Spacer(modifier = Modifier.width(8.dp))
-            ProgressCard(title = "Racha más larga", value = longestStreak.toString())
+
+            ProgressCard(
+                title = "Racha más larga",
+                value = longestStreak.toString()
+            )
         }
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -219,12 +234,13 @@ fun ProfileScreen(
             StatsRow(number = notesCount.toString(), label = "notas creadas")
         }
 
-        // Botón de Cerrar sesión
+
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Botón de Cerrar sesión
         Button(
             onClick = {
-                profileViewModel.onLogoutClick()   // Solo muestra el diálogo, NO cierra aún
+                profileViewModel.onLogoutClick()
             },
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -396,11 +412,33 @@ fun ProfileScreen(
             )
         }
 
+
+        if (showInfo) {
+            AlertDialog(
+                onDismissRequest = { showInfo = false },
+                text = { Text(profileViewModel.getStreakHelpMessage()) },
+                confirmButton = {
+                    TextButton(onClick = { showInfo = false }) {
+                        Text(
+                            "Entendido",
+                            color = Color(0xFF1E2A78))
+                    }
+                }
+            )
+        }
+
+
+
     }
 }
 
 @Composable
-fun ProgressCard(title: String, value: String) {
+fun ProgressCard(
+    title: String,
+    value: String,
+    showInfoButton: Boolean = false,
+    onInfoClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .width(150.dp)
@@ -418,17 +456,41 @@ fun ProgressCard(title: String, value: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title,
-                fontSize = 16.sp)
+            Text(title, fontSize = 16.sp)
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(value, fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.universe))
+            // Icono a la par del número
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = value,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.universe)
+                )
+
+                if (showInfoButton) {
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    IconButton(
+                        onClick = onInfoClick,
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = "Información",
+                            tint = colorResource(id = R.color.venus)
+                        )
+                    }
+                }
+            }
         }
     }
 }
+
 
 @Composable
 fun StatsRow(number: String, label: String) {

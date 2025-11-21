@@ -34,7 +34,7 @@ class ProfileViewModel @Inject constructor(
         .map { list -> list.map { LocalDate.parse(it.date) }.toSet() }
         .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
-    // Racha actual reutilizando lógica del CalendarViewModel
+    // Racha actual
     val currentStreak: StateFlow<Int> = allMarkedDays
         .map { markedDays -> calculateCurrentStreak(markedDays) }
         .stateIn(viewModelScope, SharingStarted.Lazily, 0)
@@ -57,7 +57,6 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    // Lógica extraída de CalendarViewModel:
     private fun calculateCurrentStreak(markedDays: Set<LocalDate>): Int {
         var streak = 0
         var currentDate = LocalDate.now()
@@ -98,11 +97,31 @@ class ProfileViewModel @Inject constructor(
 
     fun onDialogConfirmLogout(confirmAction: suspend () -> Unit) {
         _showLogoutDialog.value = false
-        // Llama aquí la acción de cerrar sesión, la puedes pasar como parámetro desde la UI o puedes exponer un método de logout
-        // Ejemplo si prefieres lógica 100% aquí:
-        //viewModelScope.launch {
-        //    logout() // ya implementado en tu AuthViewModel
-        //}
+    }
+
+    fun getStreakHelpMessage(): String {
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+
+        val markedDays = allMarkedDays.value
+
+        val todayMarked = markedDays.contains(today)
+        val yesterdayMarked = markedDays.contains(yesterday)
+
+        return when {
+            todayMarked -> {
+                "Destiny está bien alimentado. ¡Lo estás haciendo muy bien!"
+            }
+            currentStreak.value == 0 && yesterdayMarked -> {
+                "¡Estás a tiempo de cuidar de Destiny! Aliméntalo hoy para recuperar tu racha."
+            }
+            currentStreak.value == 0 && !yesterdayMarked -> {
+                "Nuevo día, nueva oportunidad. ¡Vuelve a alimentar a Destiny para recuperar tu racha!"
+            }
+            else -> {
+                "¡Sigue cuidando de Destiny todos los días!"
+            }
+        }
     }
 
     fun onDialogDismiss() {
