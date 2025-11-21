@@ -7,9 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +19,10 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -120,11 +125,26 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Login Image",
-            contentScale = ContentScale.FillWidth
-        )
+        Box() {
+            Image(
+                painter = painterResource(id = R.drawable.just_title_logo),
+                contentDescription = "Login Image",
+                contentScale = ContentScale.FillWidth
+            )
+
+            Image(
+                painter = if (!passwordVisibility) {painterResource(id = R.drawable.login_opened_eyes_destiny)} else{painterResource(id = R.drawable.login_closed_eyes_destiny)},
+                contentDescription = "Login Image",
+                contentScale = ContentScale.FillWidth,
+
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(y = (-10).dp)
+                    .fillMaxWidth(0.5f)
+                    //.sizeIn(10.dp, 20.dp, 10.dp, 40.dp)
+                    .fillMaxHeight(0.2f) // Tamaño de la imagen
+            )
+        }
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -222,7 +242,7 @@ fun LoginScreen(navController: NavController, onLoginSuccess: () -> Unit) {
                                         }
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Lock,
+                                            imageVector = if (!passwordVisibility) {Icons.Filled.Visibility} else {Icons.Filled.VisibilityOff},
                                             contentDescription = "Toggle Password Icon"
                                         )
                                     }
