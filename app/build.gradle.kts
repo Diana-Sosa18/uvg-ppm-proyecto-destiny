@@ -49,11 +49,14 @@ android {
 
 dependencies {
     implementation ("com.airbnb.android:lottie-compose:6.0.0")
+
+    // Firebase BOM + libs (if usas version catalog, está bien así)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.crashlytics)
 
+    // Navigation, core, lifecycle, compose
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -65,26 +68,25 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
 
+    // Room (only once, no duplicates)
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation(libs.androidx.media3.common.ktx)
-    implementation(libs.androidx.compose.foundation.layout)
-    kapt ("androidx.room:room-compiler:2.6.1")
-    implementation ("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    // Lifecycle ViewModel Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
+    // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    // Testing / debug
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

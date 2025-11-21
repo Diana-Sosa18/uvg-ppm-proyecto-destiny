@@ -20,6 +20,9 @@
     <string name="sign_in">Iniciar Sesión</string>
     <string name="or">O</string>
     <string name="register_with">Registrarse con</string>
+    <string name="dialog_title_success">Registro Exitoso</string>
+    <string name="dialog_message_success">Tu cuenta ha sido creada exitosamente.</string>
+
 
     <!-- Campos del formulario -->
     <string name="name">Nombre</string>
@@ -104,6 +107,22 @@
     <string name="journal_detail_close">Cerrar</string>
 
     <string name="journal_date_format">dd/MM/yyyy HH:mm</string>
+
+    <string name="create_pin_title">Crear PIN</string>
+    <string name="create_pin_label_pin">PIN</string>
+    <string name="create_pin_label_confirm">Confirmar PIN</string>
+    <string name="create_pin_save">Guardar</string>
+    <string name="create_pin_cancel">Cancelar</string>
+
+    <string name="enter_pin_title">Ingrese PIN</string>
+    <string name="enter_pin_label">PIN</string>
+    <string name="enter_pin_accept">Aceptar</string>
+    <string name="enter_pin_cancel">Cancelar</string>
+
+    <string name="pin_empty_error">El PIN no puede estar vacío</string>
+    <string name="pin_mismatch_error">Los PIN no coinciden</string>
+    <string name="pin_incorrect_error">PIN incorrecto</string>
+
 
     <!-- Home Screen -->
     <string name="title_home_screen">Inicio</string>
