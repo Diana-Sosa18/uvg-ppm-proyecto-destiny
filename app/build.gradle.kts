@@ -48,6 +48,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.airbnb.android:lottie-compose:6.0.0")
 
     // Firebase BOM + libs (if usas version catalog, está bien así)
     implementation(platform(libs.firebase.bom))

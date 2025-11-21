@@ -15,6 +15,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Laboratorio 4 - Login"
+rootProject.name = "Destiny"
 include(":app")
  

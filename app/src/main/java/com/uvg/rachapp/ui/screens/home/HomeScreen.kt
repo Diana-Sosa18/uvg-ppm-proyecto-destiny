@@ -31,18 +31,94 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
 import com.uvg.rachapp.ui.viewModels.CalendarViewModel
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Locale
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.LottieConstants.IterateForever
+import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 
 
-// El contenido principal de la pantalla Home
+
 @Composable
-fun HomeScreen() {
-    val scope = rememberCoroutineScope()
-    var scale by remember { mutableStateOf(1f) }
+fun HomeScreen(){
+    var showAnimation by remember { mutableStateOf(false) }
+
+    //showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit
+    if(showAnimation) {
+        FeedingDestinyAnimation(showAnimation = showAnimation, onAnimationStateChange = { showAnimation = it })
+    }
+    else{
+        OrdinaryScreen(showAnimation = showAnimation, onAnimationStateChange = { showAnimation = it })
+    }
+}
+//Animación
+@Composable
+fun FeedingDestinyAnimation(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit) {
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        val composition by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(R.raw.feeding)
+        )
+        val duration = composition?.duration
+        val delay = duration?.plus(1000)
+        LaunchedEffect(key1 = composition) {
+            delay(10000)
+            onAnimationStateChange(false)
+        }
+
+        LottieAnimation(
+            composition = composition,
+            modifier = Modifier.size(500.dp),
+//                .clickable {
+//                    isPlaying = true
+//                },
+            iterations = LottieConstants.IterateForever
+//            progress = {
+//                progress
+//            }
+        )
+    }
+}
+
+
+@Composable
+fun OrdinaryScreen(showAnimation: Boolean, onAnimationStateChange: (Boolean) -> Unit) {
+    // state to toggle between compact and expanded views
+    var expanded by remember { mutableStateOf(false) }
+    //val scope = rememberCoroutineScope()
+    //var scale by remember { mutableStateOf(1f) }
     val CalendarViewModel: CalendarViewModel = hiltViewModel()
+    var showTrashCanIcon by remember { mutableStateOf(false) }
+
+    // Aseguramos que el estado showTrashCanIcon se actualice si la racha es > 0 al inicial la app :)
+    LaunchedEffect(CalendarViewModel.uiState.value.currentStreak) {
+        if (CalendarViewModel.uiState.value.currentStreak > 0) {
+            showTrashCanIcon = true
+        } else {
+            showTrashCanIcon = false
+        }
+    }
+
+    // If expanded, show the expanded screen and provide a collapse callback
+    if (expanded) {
+        HomeCalendarScreenExpanded(viewModel = CalendarViewModel, onCollapse = { expanded = false })
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -50,7 +126,6 @@ fun HomeScreen() {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título
 
         Text(
             text = stringResource(id = R.string.home_streak_title),
@@ -58,16 +133,12 @@ fun HomeScreen() {
             fontWeight = FontWeight.Bold,
             color = Color(0xFF002366)
         )
-
-
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Calendario simulado en lo que termino el oficial (6x7 grid)
-        Calendar(viewModel = CalendarViewModel)
+        Calendar(viewModel = CalendarViewModel, onToggleExpand = { expanded = true }, showTrashCanIcon = showTrashCanIcon, onTrashCanStateChange = { showTrashCanIcon = it })
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
         // Botón + texto
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -77,16 +148,20 @@ fun HomeScreen() {
                 painter = painterResource(id = R.drawable.buttoncroqueta),
                 contentDescription = stringResource(id = R.string.home_button_desc),
                 modifier = Modifier
-                    .scale(scale)
+                    .height(90.dp)
+                    //.scale(scale)
                     .clickable {
-                        scope.launch {
-                            // animación simple al tocar
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
-                            // Añadir día de hoy a la base de datos
-                            CalendarViewModel.markTodayAsCompleted()
-                        }
+                        CalendarViewModel.markTodayAsCompleted()
+                        showTrashCanIcon = true
+                        onAnimationStateChange(true)
+//                        scope.launch {
+//                            // animación simple al tocar
+//                            scale = 1.2f
+//                            delay(200)
+//                            scale = 1f
+//                            // Añadir día de hoy a la base de datos
+//                            //CalendarViewModel.markTodayAsCompleted()
+//                        }
                     }
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -111,152 +186,200 @@ fun HomeScreen() {
                 .fillMaxHeight(0.33f),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.perrito),
-                contentDescription = stringResource(id = R.string.home_dog_desc),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        scope.launch {
-                            // animación simple al tocar
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
-                            // Borrar el día actual de la base de datos
-                            CalendarViewModel.removeTodayFromStreak()
-                        }
-                    }
+            //Spacer(modifier = Modifier.height(12.dp))
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.sleep2)
+            )
+
+            // Reproducir siempre
+            LottieAnimation(
+                composition = composition,
+                modifier = Modifier.fillMaxSize(),
+                iterations = LottieConstants.IterateForever
             )
         }
     }
 }
-//Calendario
-//currentDate: fecha actual
-//rangeDays: número total de días a mostrar (60 por defecto)
-//Retorna una lista de listas, donde cada sublista representa un bloque de 8 días
-
-fun generateCalendarBlocks(currentDate: LocalDate, rangeDays: Int = 60): List<List<LocalDate>> {
-    // Calcular el rango de fechas centrado en la fecha actual. P.e. si rangeDays es 60, se mostrarán 30 días antes y 30 días después de la fecha actual.
-    // ejemplo: si hoy es 15 de marzo, el rango será del 13 de febrero al 14 de abril.
-    // start = 15 - 30 = -15 -> 13 de febrero
-    // end = 15 + 30 = 45 -> 14 de abril
-    // allDays = [13 de febrero, 14 de febrero, ..., 14 de abril]
-    // allDays.chunked(8) = [[13 de febrero, 14 de febrero, ..., 20 de febrero], [21 de febrero, ..., 28 de febrero], ..., [8 de abril, 9 de abril, 10 de abril, 11 de abril, 12 de abril, 13 de abril, 14 de abril]]
-
-    val start = currentDate.minusDays(rangeDays.toLong() / 2)
-    //
-    val end = currentDate.plusDays(rangeDays.toLong() / 2)
-
-    val allDays = (0..rangeDays).map { start.plusDays(it.toLong()) }
-
-    return allDays.chunked(8) // bloques de 8 días
-}
-
 
 
 @Composable
-fun Calendar(viewModel: CalendarViewModel) {
+fun Calendar(
+    viewModel: CalendarViewModel,
+    onToggleExpand: () -> Unit = {},
+    showTrashCanIcon: Boolean,
+    onTrashCanStateChange: (Boolean) -> Unit
+) {
     val uiState by viewModel.uiState
     val currentBlockDays = viewModel.getCurrentBlockDays()
 
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
+    // read selection from ColorViewModel and map to compact/expanded colors
+    val colorViewModel: ColorViewModel = hiltViewModel()
+    val selection by colorViewModel.selection.collectAsState()
+    val (compactColor, expandedColor) = when (selection) {
+        1 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFFFF6F3C), // compact orange (original)
+            androidx.compose.ui.graphics.Color(0xFFFFA726)  // expanded orange
+        )
+        2 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFF00796B), // compact -> dark teal (inverted)
+            androidx.compose.ui.graphics.Color(0xFF26C6DA)  // expanded -> light teal (inverted)
+        )
+        3 -> Pair(
+            androidx.compose.ui.graphics.Color(0xFF9C27B0), // compact -> dark magenta (inverted)
+            androidx.compose.ui.graphics.Color(0xFFCE93D8)  // expanded -> light purple (inverted)
+        )
+        else -> Pair(
+            androidx.compose.ui.graphics.Color(0xFFFF6F3C),
+            androidx.compose.ui.graphics.Color(0xFFFFA726)
+        )
+    }
+
+    Box(
         modifier = Modifier
             .padding(16.dp)
             .background(Color(0xFFF0F0F0), RoundedCornerShape(16.dp))
-    ){
-        Text(
-            text = if (uiState.currentStreak > 0) {
-                "¡Llevas ${uiState.currentStreak} días! ^_^"
-            } else {
-                "Empieza una nueva racha"
-            },
-            color = Color.White,
-            modifier = Modifier
-                .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
-        ){
-            IconButton(onClick = { viewModel.goToPreviousBlock() }) {
-                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Anterior", tint = Color.Gray)
-            }
+        ) {
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp, vertical = 16.dp)
+            Spacer(modifier = Modifier.height(22.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                currentBlockDays.forEach { date ->
-                    item {
-                        CalendarDay(
-                            day = date.dayOfMonth.toString(),
-                            isHighlighted = uiState.streakDays.contains(date),
-                            isToday = date == LocalDate.now(),
-                            isSelected = date == uiState.selectedDate,
-                            onClick = { viewModel.selectDate(date) }
-                        )
+                IconButton(onClick = {
+                    val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
+                    viewModel.goToPreviousBlock()
+                    val newBlockDays = viewModel.getCurrentBlockDays()
+                    val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
+                    viewModel.selectDate(newBlockDays[selectIndex])
+                }) {
+                    Icon(
+                        Icons.Default.KeyboardArrowLeft,
+                        contentDescription = "Anterior",
+                        tint = Color.Gray
+                    )
+                }
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .padding(horizontal = 8.dp, vertical = 16.dp)
+                ) {
+                    currentBlockDays.forEach { date ->
+                        item {
+                            CalendarDay(
+                                day = date.dayOfMonth.toString(),
+                                isHighlighted = uiState.streakDays.contains(date),
+                                isToday = date == LocalDate.now(),
+                                isSelected = date == uiState.selectedDate,
+                                onClick = { viewModel.selectDate(date) },
+                                highlightColor = compactColor
+                            )
+                        }
                     }
                 }
 
+                IconButton(onClick = {
+                    val currentIndex = currentBlockDays.indexOf(uiState.selectedDate)
+                    viewModel.goToNextBlock()
+                    val newBlockDays = viewModel.getCurrentBlockDays()
+                    val selectIndex = if (currentIndex >= 0 && currentIndex < newBlockDays.size) currentIndex else 0
+                    viewModel.selectDate(newBlockDays[selectIndex])
+                }) {
+                    Icon(
+                        Icons.Default.KeyboardArrowRight,
+                        contentDescription = "Siguiente",
+                        tint = Color.Gray
+                    )
+                }
             }
 
-            IconButton(onClick = { viewModel.goToNextBlock() }) {
-                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Siguiente", tint = Color.Gray)
-            }
-        }
-        //Botón "volver al día actual", solo aparece cuando no se está en fecha
+            Spacer(modifier = Modifier.height(12.dp))
 
-
-
-        if (uiState.selectedDate != LocalDate.now()){
-            Button (
-                onClick = {viewModel.selectDate(LocalDate.now())},
+            Text(
+                text = viewModel.getMonthTitleForCurrentBlock(),
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(8.dp)
+                    .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
+                    .padding(vertical = 12.dp)
+                    .fillMaxWidth()
             )
-            {
-                Text("Volver al futuro XD")
-            }
         }
 
+        // Botón de agrandar
+        IconButton(
+            onClick = { onToggleExpand() },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .height(24.dp)
+                .padding(start = 4.dp)
+                .background(Color(0xFFA727B0), CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.DateRange,
+                contentDescription = "Agrandar",
+                modifier = Modifier.size(24.dp),
+                tint = Color.White
+            )
+        }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
+        if (uiState.selectedDate == LocalDate.now() && showTrashCanIcon) {
+            IconButton(
+                onClick = {
+                    viewModel.removeTodayFromStreak()
+                    onTrashCanStateChange(false)
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .height(24.dp)
+                    .padding(start = 5.dp)
+                    .background(Color(0xFFFA0606), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Borrar día",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.White
+                )
+            }
+        } else {
+            if (uiState.selectedDate != LocalDate.now()) {
+                IconButton(
+                    onClick = { viewModel.selectDate(LocalDate.now()) },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .height(24.dp)
+                        .padding(start = 5.dp)
+                        .background(Color(0xFFFFC107), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Refresh,
+                        contentDescription = "Regresar a hoy",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White
+                    )
+                }
+            }
+        }
 
         Text(
-            text = uiState.selectedDate.month.getDisplayName(TextStyle.FULL, Locale("es")).uppercase(),
+            text = if (uiState.currentStreak > 0) "¡Llevas ${uiState.currentStreak} días" else "Empieza una nueva racha",
             color = Color.White,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
-                .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
-                .padding(vertical = 12.dp)
-                .fillMaxWidth()
+                .align(alignment = Alignment.TopCenter)
+                .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
+                .padding(top = 3.dp)
         )
-        /*
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-
-        }
-
-         */
     }
 }
 
@@ -266,20 +389,21 @@ fun CalendarDay(
     isHighlighted: Boolean,
     isToday: Boolean,
     isSelected: Boolean,
-    onClick: () -> Unit
-) {
+    onClick: () -> Unit,
+    highlightColor: androidx.compose.ui.graphics.Color = Color(0xFFFF6F3C)
+){
     Box(
         modifier = Modifier
-            .size(56.dp)
+            .size(60.dp)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
-    ) {
+    ){
         Box(
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape)
                 .background(
-                    color = if (isHighlighted) Color(0xFFFF6F3C) else Color.White,
+                    color = if (isHighlighted) highlightColor else Color.White,
                     shape = CircleShape
                 )
                 .border(
@@ -288,7 +412,7 @@ fun CalendarDay(
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
-        ) {
+        ){
             Text(
                 text = day,
                 color = if (isHighlighted) Color.White else Color.Black,
@@ -297,7 +421,7 @@ fun CalendarDay(
             )
         }
 
-        if (isToday) {
+        if (isToday){
             Text(
                 text = "  HOY  ",
                 color = Color.White,
@@ -305,24 +429,13 @@ fun CalendarDay(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .padding(end = 5.dp)
                     .offset(y = 11.dp)
                     .background(Color(0xFFFFD700))
             )
-            /*
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 11.dp)
-            ) {
-
-            }
-
-             */
         }
 
         if (isSelected){
-            //Poner un placeholder al objeto de día para cuando este se encuentre seleccionado, indicando "seleccionado".
             Text(
                 text = "SELECTED",
                 color = Color.Black,
@@ -330,260 +443,11 @@ fun CalendarDay(
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .padding(top = 4.dp)
                     .offset(y = (-11).dp)
-                //.background(Color.Gray)
-            )
-
-        }
-
-
-    }
-}
-
-/*
-
-// ---- Calendario fake para visualización ----
-// El contenido principal de la pantalla Home
-@Preview(showBackground = true)
-@Composable
-fun AppScreenPreview() {
-    PrevHomeScreen()
-}
-
-@Composable
-fun HomeScreen() {
-    val scope = rememberCoroutineScope()
-    var scale by remember { mutableStateOf(1f) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Título
-
-        Text(
-            text = stringResource(id = R.string.home_streak_title),
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF002366)
-        )
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Calendario simulado en lo que termino el oficial (6x7 grid)
-        CalendarPreview()
-
-        Spacer(modifier = Modifier.height(16.dp))
-        //Button(onClick = { /* Acción de cerrar sesión aquí si se requiere */ }) {
-            //Text("Cerrar sesión")
-        //}
-        Spacer(modifier = Modifier.height(16.dp))
-        // Botón + texto
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.buttoncroqueta),
-                contentDescription = stringResource(id = R.string.home_button_desc),
-                modifier = Modifier
-                    .scale(scale)
-                    .clickable {
-                        scope.launch {
-                            // animación simple al tocar
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
-                        }
-                    }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Text(
-                stringResource(id = R.string.home_arrow),
-                fontSize = 26.sp
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                stringResource(id = R.string.home_feed_destiny),
-                fontSize = 14.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Imagen animada (1/3 de pantalla)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .fillMaxHeight(0.33f),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.perrito),
-                contentDescription = stringResource(id = R.string.home_dog_desc),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable {
-                        scope.launch {
-                            // animación simple al tocar
-                            scale = 1.2f
-                            delay(200)
-                            scale = 1f
-                        }
-                    }
             )
         }
     }
 }
 
 
-@Composable
-fun CalendarPreview() {
-    Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(16.dp)
-            .background(Color(0xFFF0F0F0), RoundedCornerShape(16.dp))
-    ){
-        Text(
-            text = "¡Llevas 35 días! ^_^",
-            color = Color.White,
-            modifier = Modifier
-                .background(Color(0xFF1E5BC6), RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ){
-            IconButton(onClick = { /* TODO */ }) {
-                Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Anterior", tint = Color.Gray)
-            }
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-            ) {
-                val days = listOf("31", "1", "2", "3", "4", "5", "6", "7")
-                days.forEach { day ->
-                    item {
-                        PreviewCalendarDay(
-                            day = day,
-                            isHighlighted = day in listOf("31", "1", "2"),
-                            isToday = day == "2",
-                            isSelected = day == "4" // Marcar el día 4 como seleccionado (placeholder
-                        )
-                    }
-                }
-            }
-
-            IconButton(onClick = { /* TODO */ }) {
-                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Siguiente", tint = Color.Gray)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFF1E2A78), RoundedCornerShape(8.dp))
-                .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "OCTUBRE",
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
-}
-
-@Composable
-fun PreviewCalendarDay(
-    day: String,
-    isHighlighted: Boolean,
-    isToday: Boolean,
-    isSelected: Boolean
-) {
-    Box(
-        modifier = Modifier.size(56.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(
-                    color = if (isHighlighted) Color(0xFFFF6F3C) else Color.White,
-                    shape = CircleShape
-                )
-                .border(
-                    width = 2.dp,
-                    color = if (isToday) Color(0xFFFFD700) else Color.White,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = day,
-                color = if (isHighlighted) Color.White else Color.Black,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        if (isToday) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 11.dp)
-            ) {
-                Text(
-                    text = "  HOY  ",
-                    color = Color.White,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .background(Color(0xFFFFD700))
-                )
-            }
-        }
-
-        if (isSelected){
-            //Poner un placeholder al objeto de día para cuando este se encuentre seleccionado, indicando "seleccionado".
-            Text(
-                text = "SELECTED",
-                color = Color.Black,
-                fontSize = 8.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = (-11).dp)
-                    //.background(Color.Gray)
-            )
-
-        }
-
-
-    }
-}
-
-
- */
