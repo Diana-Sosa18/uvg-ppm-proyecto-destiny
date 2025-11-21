@@ -1,5 +1,6 @@
 package com.uvg.rachapp.ui.screens.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,8 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,43 +33,53 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import androidx.compose.runtime.collectAsState
-import com.uvg.rachapp.ui.viewModels.ColorViewModel
-import androidx.compose.runtime.getValue as composeGetValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import com.uvg.rachapp.ui.viewModels.ProfileViewModel
 import com.uvg.rachapp.viewModels.AuthViewModel
-
 
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+    val userEmail by profileViewModel.userEmail.collectAsState()
+    val userName by profileViewModel.userName.collectAsState()
+    val currentStreak by profileViewModel.currentStreak.collectAsState()
+    val longestStreak by profileViewModel.longestStreak.collectAsState()
+    val daysFed by profileViewModel.daysFed.collectAsState()
+    val notesCount by profileViewModel.notesCount.collectAsState()
     var showSettingsDialog by remember { mutableStateOf(false) }
     val colorViewModel: ColorViewModel = hiltViewModel()
     val context = LocalContext.current
+    val showLogoutDialog by profileViewModel.showLogoutDialog.collectAsState()
+    val authViewModel: AuthViewModel = hiltViewModel()
+    var showInfo by remember { mutableStateOf(false) }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = R.color.meteor))
+            .background(Color(0xFFF5F5F5))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -76,7 +87,9 @@ fun ProfileScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 3.dp)
         ) {
             // Título superior
             Text(
@@ -86,6 +99,7 @@ fun ProfileScreen(
                 color = colorResource(id = R.color.galaxy),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .padding(start = 8.dp)
             )
 
             // Botón de ajustes
@@ -103,9 +117,13 @@ fun ProfileScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             // Avatar
             Image(
@@ -122,13 +140,13 @@ fun ProfileScreen(
             // Nombre y correo
             Column {
                 Text(
-                    text = "User Name",
+                    text = userName,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.galaxy)
                 )
                 Text(
-                    text = "correo@gmail.com",
+                    text = userEmail,
                     fontSize = 16.sp,
                     color = colorResource(id = R.color.galaxy)
                 )
@@ -136,35 +154,45 @@ fun ProfileScreen(
         }
 
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         // Progreso
         Text(
             text = "Progreso",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start),
+            modifier = Modifier
+                .align(Alignment.Start),
             color = colorResource(id = R.color.galaxy)
         )
-        Spacer(modifier = Modifier.height(12.dp))
 
-        // Valores de prueba
-        val currentStreak = 10
-        val longestStreak = 61
-        val progress = currentStreak.toFloat() / longestStreak.toFloat()
+        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            ProgressCard(title = "Racha actual", value = currentStreak.toString())
+            ProgressCard(
+                title = "Racha actual",
+                value = currentStreak.toString(),
+                showInfoButton = true,
+                onInfoClick = { showInfo = true }
+            )
+
             Spacer(modifier = Modifier.width(8.dp))
-            ProgressCard(title = "Racha más larga", value = longestStreak.toString())
+
+            ProgressCard(
+                title = "Racha más larga",
+                value = longestStreak.toString()
+            )
         }
+
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // Barra de progreso
+        val progress = if (longestStreak > 0) currentStreak.toFloat() / longestStreak else 0f
         Box(
             modifier = Modifier
                 .width(316.dp)
@@ -185,14 +213,15 @@ fun ProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         // Estadísticas
         Text(
             text = "Estadísticas",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start),
+            modifier = Modifier
+                .align(Alignment.Start),
             color = colorResource(id = R.color.galaxy)
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -200,18 +229,17 @@ fun ProfileScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            StatsRow(number = "120", label = "días alimentando a Destiny")
+            StatsRow(number = daysFed.toString(), label = "días alimentando a Destiny")
             StatsRow(number = "12", label = "artículos leídos")
-            StatsRow(number = "23", label = "notas creadas")
+            StatsRow(number = notesCount.toString(), label = "notas creadas")
         }
 
-        // Cerrar sesión
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Botón de Cerrar sesión
         Button(
             onClick = {
-                authViewModel.logout()  // Cierra sesión en Firebase
-                onLogout()
+                profileViewModel.onLogoutClick()
             },
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -219,7 +247,8 @@ fun ProfileScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.venus)
+                containerColor = colorResource(id = R.color.meteor),
+                contentColor = colorResource(id = R.color.universe)
             )
         ) {
             Row(
@@ -228,11 +257,44 @@ fun ProfileScreen(
             ) {
                 Text(
                     text = "Cerrar sesión",
-                    color = colorResource(id = R.color.universe),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
             }
+        }
+
+    // Diálogo de confirmación
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { profileViewModel.onDialogDismiss() },
+                title = {
+                    Text(
+                        "Confirmar para cerrar sesión",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = { Text("¿Seguro que quiere cerrar sesión?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        authViewModel.logout()
+                        profileViewModel.onDialogDismiss()
+                        onLogout()
+                    }) {
+                        Text(
+                            text = stringResource(R.string.journal_confirm_yes),
+                            color = Color(0xFF757575)
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { profileViewModel.onDialogDismiss() }) {
+                        Text(
+                            text = stringResource(R.string.journal_confirm_no),
+                            color = Color(0xFF1E2A78)
+                        )
+                    }
+                }
+            )
         }
         if (showSettingsDialog) {
             AlertDialog(
@@ -241,7 +303,7 @@ fun ProfileScreen(
                     Text(text = "Color de racha de calendario", fontWeight = FontWeight.Bold)
                 },
                 text = {
-                    Column() { // Primer grupo de colores (naranja)
+                    Column { // Primer grupo de colores (naranja)
                         // Row 1: naranja pair
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),
@@ -349,11 +411,33 @@ fun ProfileScreen(
             )
         }
 
+
+        if (showInfo) {
+            AlertDialog(
+                onDismissRequest = { showInfo = false },
+                text = { Text(profileViewModel.getStreakHelpMessage()) },
+                confirmButton = {
+                    TextButton(onClick = { showInfo = false }) {
+                        Text(
+                            "Entendido",
+                            color = Color(0xFF1E2A78))
+                    }
+                }
+            )
+        }
+
+
+
     }
 }
 
 @Composable
-fun ProgressCard(title: String, value: String) {
+fun ProgressCard(
+    title: String,
+    value: String,
+    showInfoButton: Boolean = false,
+    onInfoClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .width(150.dp)
@@ -371,17 +455,41 @@ fun ProgressCard(title: String, value: String) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(title,
-                fontSize = 16.sp)
+            Text(title, fontSize = 16.sp)
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(value, fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.universe))
+            // Icono a la par del número
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = value,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.universe)
+                )
+
+                if (showInfoButton) {
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    IconButton(
+                        onClick = onInfoClick,
+                        modifier = Modifier.size(20.dp)
+                    ) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription = "Información",
+                            tint = colorResource(id = R.color.venus)
+                        )
+                    }
+                }
+            }
         }
     }
 }
+
 
 @Composable
 fun StatsRow(number: String, label: String) {

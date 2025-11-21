@@ -92,4 +92,15 @@ class AuthRepository @Inject constructor(
             Result.failure(Exception("Error: ${e.message}"))
         }
     }
+
+    suspend fun getUserName(uid: String?): String? {
+        if (uid == null) return null
+
+        return try {
+            val snapshot = db.collection("users").document(uid).get().await()
+            snapshot.getString("name")
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
