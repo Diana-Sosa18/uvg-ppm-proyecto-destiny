@@ -1,5 +1,6 @@
 package com.uvg.rachapp.ui.screens.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -32,20 +32,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import android.widget.Toast
-import androidx.compose.runtime.collectAsState
-import com.uvg.rachapp.ui.viewModels.ColorViewModel
-import androidx.compose.runtime.getValue as composeGetValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,14 +50,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
+import com.uvg.rachapp.ui.viewModels.ColorViewModel
+import com.uvg.rachapp.ui.viewModels.ProfileViewModel
 import com.uvg.rachapp.viewModels.AuthViewModel
-
 
 @Composable
 fun ProfileScreen(
     onLogout: () -> Unit,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+    val userEmail by profileViewModel.userEmail.collectAsState()
+    val userName by profileViewModel.userName.collectAsState()
+    val currentStreak by profileViewModel.currentStreak.collectAsState()
+    val longestStreak by profileViewModel.longestStreak.collectAsState()
+    val daysFed by profileViewModel.daysFed.collectAsState()
+    val notesCount by profileViewModel.notesCount.collectAsState()
     var showSettingsDialog by remember { mutableStateOf(false) }
     val colorViewModel: ColorViewModel = hiltViewModel()
     val context = LocalContext.current
@@ -122,13 +126,13 @@ fun ProfileScreen(
             // Nombre y correo
             Column {
                 Text(
-                    text = "User Name",
+                    text = userName,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.galaxy)
                 )
                 Text(
-                    text = "correo@gmail.com",
+                    text = userEmail,
                     fontSize = 16.sp,
                     color = colorResource(id = R.color.galaxy)
                 )
