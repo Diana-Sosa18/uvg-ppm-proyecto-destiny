@@ -127,5 +127,24 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+    fun sendPasswordResetEmail(email: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val result = authRepository.sendPasswordReset(email)
+                if (result.isSuccess) {
+                    _authState.value = AuthState.Success(
+                        "Correo de recuperación enviado exitosamente. Revisa tu bandeja de entrada."
+                    )
+                } else {
+                    _authState.value = AuthState.Error(
+                        result.exceptionOrNull()?.message ?: "Error al procesar la solicitud"
+                    )
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Error desconocido")
+            }
+        }
+    }
 
 }

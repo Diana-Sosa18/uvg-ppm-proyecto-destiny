@@ -71,4 +71,25 @@ class AuthRepository @Inject constructor(
         } catch (_: Exception) {
         }
     }
+    suspend fun sendPasswordReset(email: String): Result<Unit> {
+        return try {
+            val userQuery = db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .await()
+
+            android.util.Log.d("AuthRepository", "Query successful. isEmpty: ${userQuery.isEmpty}")
+
+            if (userQuery.isEmpty) {
+                Result.failure(Exception("No existe una cuenta registrada con este correo electrónico"))
+            } else {
+                auth.sendPasswordResetEmail(email).await()
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AuthRepository", "Error: ${e.message}", e)
+            Result.failure(Exception("Error: ${e.message}"))
+        }
+    }
 }
