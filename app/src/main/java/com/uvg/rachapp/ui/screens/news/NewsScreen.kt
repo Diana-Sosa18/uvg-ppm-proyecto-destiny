@@ -1,5 +1,10 @@
 package com.uvg.rachapp.ui.screens.news
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,11 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,29 +32,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.uvg.rachapp.R
+import com.uvg.rachapp.data.model.News
 import com.uvg.rachapp.ui.viewModels.NewsViewModel
-
-data class Articulo(val titulo: Int, val descripcion: Int, val descripcionCompleta: Int)
 
 @Composable
 fun NewsScreen(
-    newsViewModel: NewsViewModel = viewModel()
+    newsViewModel: NewsViewModel = hiltViewModel()
 ) {
-    val backgroundColor = Color(0xFFEDF0F5)   // Fondo general (igual que tu diseño)
-    val cardColor = Color(0xFFD0D4D8)         // Fondo de cada artículo (igual)
-    val titleColor = Color(0xFF091F5B)        // Azul para títulos y subtítulos (igual)
-
-    val articulos = listOf(
-        Articulo(R.string.articulo1_title, R.string.articulo1_desc, R.string.articulo1_full),
-        Articulo(R.string.articulo2_title, R.string.articulo2_desc, R.string.articulo2_full),
-        Articulo(R.string.articulo3_title, R.string.articulo3_desc, R.string.articulo3_full),
-        Articulo(R.string.articulo4_title, R.string.articulo4_desc, R.string.articulo4_full)
-    )
+    val backgroundColor = Color(0xFFEDF0F5)
+    val cardColor = Color(0xFFD0D4D8)
+    val titleColor = Color(0xFF091F5B)
 
     val uiState by newsViewModel.uiState.collectAsState()
 
@@ -57,49 +58,53 @@ fun NewsScreen(
             .background(backgroundColor),
         contentAlignment = Alignment.TopCenter
     ) {
-        Surface(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Título principal (igual que tu diseño original)
-                Text(
-                    text = stringResource(R.string.articulos_title),
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        color = titleColor,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(bottom = 16.dp)
+        when {
+            uiState.isLoading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
                 )
+            }
 
-                // Lista de artículos (tarjetas)
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp),
-                    modifier = Modifier.fillMaxWidth()
+            uiState.errorMessage != null -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(articulos) { index, articulo ->
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { newsViewModel.onOpenDialog(index) }, // aquí abrimos dialog
-                            shape = RoundedCornerShape(12.dp),
-                            color = cardColor,
-                            shadowElevation = 2.dp
+                    Text(
+                        text = "Error: ${uiState.errorMessage}",
+                        color = Color.Red
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { newsViewModel.retryLoadNews() }) {
+                        Text("Reintentar")
+                    }
+                }
+            }
+
+            else -> {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = stringResource(R.string.articulos_title),
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                color = titleColor,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(bottom = 16.dp),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = stringResource(articulo.titulo),
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        color = titleColor,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier.padding(bottom = 6.dp)
-                                )
-                                Text(
-                                    text = stringResource(articulo.descripcion),
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = Color.Black
-                                    )
+                            itemsIndexed(uiState.newsList) { index, news ->
+                                NewsCard(
+                                    news = news,
+                                    isExpanded = uiState.expandedIndex == index,
+                                    onClick = { newsViewModel.onNewsClick(index) },
+                                    cardColor = cardColor,
+                                    titleColor = titleColor
                                 )
                             }
                         }
@@ -109,35 +114,149 @@ fun NewsScreen(
         }
     }
 
-    // Dialog que muestra la noticia completa de la tarjeta seleccionada
-    if (uiState.isDialogOpen && uiState.selectedIndex != null) {
-        val selected = articulos[uiState.selectedIndex!!]
-        AlertDialog(
-            onDismissRequest = { newsViewModel.onCloseDialog() },
-            title = {
-                Text(
-                    text = stringResource(selected.titulo),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = titleColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = stringResource(selected.descripcionCompleta),
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            },
-            confirmButton = {
-                Button(onClick = { newsViewModel.onCloseDialog() }) {
-                    Text(text = stringResource(R.string.cerrar))
-                }
-            }
+    // Dialog para mostrar noticia completa
+    if (uiState.isDialogOpen && uiState.selectedNews != null) {
+        NewsDialog(
+            news = uiState.selectedNews!!,
+            onDismiss = { newsViewModel.onCloseDialog() },
+            titleColor = titleColor
         )
     }
 }
 
+@Composable
+fun NewsCard(
+    news: News,
+    isExpanded: Boolean,
+    onClick: () -> Unit,
+    cardColor: Color,
+    titleColor: Color
+) {
+    val cardHeight by animateDpAsState(
+        targetValue = if (isExpanded) 300.dp else 120.dp,
+        label = "cardHeight"
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(cardHeight)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        color = cardColor,
+        shadowElevation = 2.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = news.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = titleColor,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(bottom = 6.dp)
+            )
+
+            Text(
+                text = news.shortDesc,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.Black
+                )
+            )
+
+            // Mostrar imagen rectangular cuando se expande
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    val imageResId = getImageResource(news.imageResName)
+                    if (imageResId != null) {
+                        Image(
+                            painter = painterResource(id = imageResId),
+                            contentDescription = "Imagen de ${news.title}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NewsDialog(
+    news: News,
+    onDismiss: () -> Unit,
+    titleColor: Color
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = news.title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = titleColor,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = news.fullText,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Imagen cuadrada en el diálogo
+                val imageResId = getImageResource(news.imageResName)
+                if (imageResId != null) {
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = "Imagen de ${news.title}",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .padding(8.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text(text = stringResource(R.string.cerrar))
+            }
+        }
+    )
+}
+
+@Composable
+private fun getImageResource(imageName: String): Int? {
+    return when (imageName) {
+        "news1" -> R.drawable.news1
+        "news2" -> R.drawable.news2
+        "news3" -> R.drawable.news3
+        "news4" -> R.drawable.news4
+        "news5" -> R.drawable.news5
+        "news6" -> R.drawable.news6
+        "news7" -> R.drawable.news7
+        "news8" -> R.drawable.news8
+        "news9" -> R.drawable.news9
+        "news10" -> R.drawable.news10
+        else -> null
+    }
+}
