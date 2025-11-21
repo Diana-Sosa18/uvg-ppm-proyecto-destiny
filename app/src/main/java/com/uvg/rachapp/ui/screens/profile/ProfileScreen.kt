@@ -234,7 +234,6 @@ fun ProfileScreen(
             StatsRow(number = notesCount.toString(), label = "notas creadas")
         }
 
-
         Spacer(modifier = Modifier.height(32.dp))
 
         // Botón de Cerrar sesión

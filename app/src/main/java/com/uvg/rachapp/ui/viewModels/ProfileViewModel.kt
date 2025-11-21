@@ -52,8 +52,12 @@ class ProfileViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val user = authRepository.getCurrentUser()
+
             _userEmail.value = user?.email ?: ""
-            _userName.value = user?.displayName ?: user?.email?.substringBefore("@") ?: "Desconocido"
+            _userName.value =
+                authRepository.getUserName(user?.uid)
+                ?: user?.email?.substringBefore("@")
+                ?: "Desconocido"
         }
     }
 
