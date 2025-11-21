@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,6 +70,8 @@ fun ProfileScreen(
     var showSettingsDialog by remember { mutableStateOf(false) }
     val colorViewModel: ColorViewModel = hiltViewModel()
     val context = LocalContext.current
+    val showLogoutDialog by profileViewModel.showLogoutDialog.collectAsState()
+    val authViewModel: AuthViewModel = hiltViewModel()
 
     Column(
         modifier = Modifier
@@ -81,7 +84,9 @@ fun ProfileScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 3.dp)
         ) {
             // Título superior
             Text(
@@ -91,6 +96,7 @@ fun ProfileScreen(
                 color = colorResource(id = R.color.galaxy),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .padding(start = 8.dp)
             )
 
             // Botón de ajustes
@@ -108,9 +114,13 @@ fun ProfileScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             // Avatar
             Image(
@@ -141,16 +151,18 @@ fun ProfileScreen(
         }
 
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         // Progreso
         Text(
             text = "Progreso",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start),
+            modifier = Modifier
+                .align(Alignment.Start),
             color = colorResource(id = R.color.galaxy)
         )
+
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(
@@ -186,14 +198,15 @@ fun ProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         // Estadísticas
         Text(
             text = "Estadísticas",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start),
+            modifier = Modifier
+                .align(Alignment.Start),
             color = colorResource(id = R.color.galaxy)
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -206,13 +219,12 @@ fun ProfileScreen(
             StatsRow(number = notesCount.toString(), label = "notas creadas")
         }
 
-        // Cerrar sesión
+        // Botón de Cerrar sesión
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
             onClick = {
-                authViewModel.logout()  // Cierra sesión en Firebase
-                onLogout()
+                profileViewModel.onLogoutClick()   // Solo muestra el diálogo, NO cierra aún
             },
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -235,6 +247,40 @@ fun ProfileScreen(
                 )
             }
         }
+
+    // Diálogo de confirmación
+        if (showLogoutDialog) {
+            AlertDialog(
+                onDismissRequest = { profileViewModel.onDialogDismiss() },
+                title = {
+                    Text(
+                        "Confirmar para cerrar sesión",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                text = { Text("¿Seguro que quiere cerrar sesión?") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        authViewModel.logout()
+                        profileViewModel.onDialogDismiss()
+                        onLogout()
+                    }) {
+                        Text(
+                            text = stringResource(R.string.journal_confirm_yes),
+                            color = Color(0xFF757575)
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { profileViewModel.onDialogDismiss() }) {
+                        Text(
+                            text = stringResource(R.string.journal_confirm_no),
+                            color = Color(0xFF1E2A78)
+                        )
+                    }
+                }
+            )
+        }
         if (showSettingsDialog) {
             AlertDialog(
                 onDismissRequest = { showSettingsDialog = false },
@@ -242,7 +288,7 @@ fun ProfileScreen(
                     Text(text = "Color de racha de calendario", fontWeight = FontWeight.Bold)
                 },
                 text = {
-                    Column() { // Primer grupo de colores (naranja)
+                    Column { // Primer grupo de colores (naranja)
                         // Row 1: naranja pair
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(2.dp),

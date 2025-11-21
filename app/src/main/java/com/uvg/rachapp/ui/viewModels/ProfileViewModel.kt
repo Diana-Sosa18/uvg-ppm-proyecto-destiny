@@ -87,4 +87,25 @@ class ProfileViewModel @Inject constructor(
         }
         return max
     }
+
+    // Estado del diálogo
+    private val _showLogoutDialog = MutableStateFlow(false)
+    val showLogoutDialog: StateFlow<Boolean> = _showLogoutDialog.asStateFlow()
+
+    fun onLogoutClick() {
+        _showLogoutDialog.value = true
+    }
+
+    fun onDialogConfirmLogout(confirmAction: suspend () -> Unit) {
+        _showLogoutDialog.value = false
+        // Llama aquí la acción de cerrar sesión, la puedes pasar como parámetro desde la UI o puedes exponer un método de logout
+        // Ejemplo si prefieres lógica 100% aquí:
+        //viewModelScope.launch {
+        //    logout() // ya implementado en tu AuthViewModel
+        //}
+    }
+
+    fun onDialogDismiss() {
+        _showLogoutDialog.value = false
+    }
 }
