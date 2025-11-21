@@ -248,7 +248,8 @@ fun ProfileScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.venus)
+                containerColor = colorResource(id = R.color.meteor),
+                contentColor = colorResource(id = R.color.universe)
             )
         ) {
             Row(
@@ -257,7 +258,6 @@ fun ProfileScreen(
             ) {
                 Text(
                     text = "Cerrar sesión",
-                    color = colorResource(id = R.color.universe),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
