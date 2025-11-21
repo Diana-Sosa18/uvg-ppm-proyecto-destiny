@@ -69,6 +69,7 @@ fun ProfileScreen(
     var showSettingsDialog by remember { mutableStateOf(false) }
     val colorViewModel: ColorViewModel = hiltViewModel()
     val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -152,11 +153,6 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Valores de prueba
-        val currentStreak = 10
-        val longestStreak = 61
-        val progress = currentStreak.toFloat() / longestStreak.toFloat()
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -169,6 +165,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Barra de progreso
+        val progress = if (longestStreak > 0) currentStreak.toFloat() / longestStreak else 0f
         Box(
             modifier = Modifier
                 .width(316.dp)
@@ -204,9 +201,9 @@ fun ProfileScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            StatsRow(number = "120", label = "días alimentando a Destiny")
+            StatsRow(number = daysFed.toString(), label = "días alimentando a Destiny")
             StatsRow(number = "12", label = "artículos leídos")
-            StatsRow(number = "23", label = "notas creadas")
+            StatsRow(number = notesCount.toString(), label = "notas creadas")
         }
 
         // Cerrar sesión
