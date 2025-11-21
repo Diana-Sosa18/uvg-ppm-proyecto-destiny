@@ -13,7 +13,7 @@ import javax.inject.Inject
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
-    object SignedOut : AuthState()  // NUEVO ESTADO
+    object SignedOut : AuthState()
     data class Success(val message: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
@@ -99,7 +99,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    // FUNCIÓN PARA CERRAR SESIÓN
+
     fun signOut() {
         viewModelScope.launch {
             try {
@@ -117,9 +117,33 @@ class AuthViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            authRepository.signOut()
-            _isUserLoggedIn.value = false
-            _authState.value = AuthState.Success("Sesión cerrada")
+            _authState.value = AuthState.Loading
+            try {
+                authRepository.signOutAndClear()
+                _isUserLoggedIn.value = false
+                _authState.value = AuthState.SignedOut
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Error al cerrar sesión: ${e.message}")
+            }
+        }
+    }
+    fun sendPasswordResetEmail(email: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            try {
+                val result = authRepository.sendPasswordReset(email)
+                if (result.isSuccess) {
+                    _authState.value = AuthState.Success(
+                        "Correo de recuperación enviado exitosamente. Revisa tu bandeja de entrada."
+                    )
+                } else {
+                    _authState.value = AuthState.Error(
+                        result.exceptionOrNull()?.message ?: "Error al procesar la solicitud"
+                    )
+                }
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Error desconocido")
+            }
         }
     }
 

@@ -27,7 +27,7 @@ abstract class JournalDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context.applicationContext,
                     JournalDatabase::class.java,
-                    "journal_db" // nombre distinto: evita tocar "streak_db"
+                    "journal_db"
                 ).build().also { INSTANCE = it }
             }
         }
@@ -51,4 +51,5 @@ object JournalDatabaseModule {
     fun provideNoteDao(database: JournalDatabase): NoteDao {
         return database.noteDao()
     }
+
 }
